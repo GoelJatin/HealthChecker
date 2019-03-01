@@ -26,9 +26,25 @@ def encrypt(salt, password):
     return hashlib.sha512(password + salt).digest()
 
 
-class Encryption:
+class Encrypt:
+
+    def generate_cipher(self):
+        raise NotImplementedError()
+
+    def reset(self):
+        self.destroy()
+        self.generate_cipher()
+
+    def destroy(self):
+        os.unlink(PRIVATE_KEY_PATH)
+        os.unlink(PUBLIC_KEY_PATH)
+
+
+class Encryption(Encrypt):
 
     def __init__(self):
+        self.session_key = None
+        self._encryption_cipher = None
         self.generate_cipher()
 
     @property
@@ -37,13 +53,6 @@ class Encryption:
             return self._encryption_cipher
         
         raise Exception('Encryption cipher is not initialized')
-
-    @property
-    def decryption_cipher(self):
-        if self._decryption_cipher:
-            return self._decryption_cipher
-        
-        raise Exception('Decryption cipher is not initialized')
 
     def generate_cipher(self):
         if not (os.path.exists(PRIVATE_KEY_PATH) and os.path.exists(PUBLIC_KEY_PATH)):
@@ -55,24 +64,54 @@ class Encryption:
             with open(PUBLIC_KEY_PATH, "wb") as file_out:
                 file_out.write(key.publickey().export_key())
 
-        session_key = get_random_bytes(16)
-        enc_session_key = PKCS1_OAEP.new(RSA.import_key(open(PUBLIC_KEY_PATH).read())).encrypt(session_key)
+        self.session_key = get_random_bytes(16)
 
-        self._encryption_cipher = AES.new(session_key, AES.MODE_EAX)
-        self._decryption_cipher = AES.new(
-            PKCS1_OAEP.new(RSA.import_key(open(PRIVATE_KEY_PATH).read())).decrypt(enc_session_key),
-            AES.MODE_EAX,
-            self.encryption_cipher.nonce
-        )
+        self._encryption_cipher = AES.new(self.session_key, AES.MODE_EAX)
 
     def encrypt(self, message):
         try:
             if not isinstance(message, bytes):
                 message = message.encode()
 
-            return self.encryption_cipher.encrypt_and_digest(message)
+            enc_session_key = PKCS1_OAEP.new(RSA.import_key(open(PUBLIC_KEY_PATH).read())).encrypt(self.session_key)
+            ciphertext, tag = self.encryption_cipher.encrypt_and_digest(message)
+            nonce = self.encryption_cipher.nonce
+
+            return {
+                'enc_session_key': enc_session_key,
+                'nonce': nonce,
+                'ciphertext': ciphertext,
+                'tag': tag
+            }
         except ValueError:
             raise Exception('Invalid text given. Please check the text again!')
+
+    def destroy(self):
+        super().destroy()
+        self._encryption_cipher = None
+
+
+class Decryption(Encrypt):
+
+    def __init__(self, enc_session_key, nonce):
+        self._decryption_cipher = None
+        self.enc_session_key = enc_session_key
+        self.nonce = nonce
+        self.generate_cipher()
+
+    @property
+    def decryption_cipher(self):
+        if self._decryption_cipher:
+            return self._decryption_cipher
+
+        raise Exception('Decryption cipher is not initialized')
+
+    def generate_cipher(self):
+        self._decryption_cipher = AES.new(
+            PKCS1_OAEP.new(RSA.import_key(open(PRIVATE_KEY_PATH).read())).decrypt(self.enc_session_key),
+            AES.MODE_EAX,
+            self.nonce
+        )
 
     def decrypt(self, message):
         try:
@@ -83,15 +122,6 @@ class Encryption:
         except ValueError:
             raise Exception('Invalid Ciphertext. Please check the text again!')
 
-    def reset(self):
-        self.destroy()
-        self.generate_cipher()
-
     def destroy(self):
-        os.unlink(PRIVATE_KEY_PATH)
-        os.unlink(PUBLIC_KEY_PATH)
-        self._encryption_cipher = self._decryption_cipher = None
-
-
-if __name__ == "__main__":
-    E = Encryption()
+        super().destroy()
+        self._decryption_cipher = None
