@@ -13,7 +13,7 @@ from Crypto.Cipher import (
     PKCS1_OAEP
 )
 
-from ..constants import (
+from constants import (
     PRIVATE_KEY_PATH,
     PUBLIC_KEY_PATH
 )
@@ -46,13 +46,13 @@ class Encryption:
         raise Exception('Decryption cipher is not initialized')
 
     def generate_cipher(self):
-        if not (os.path.exists(PRIVATE_KEY_PATH) or os.path.exists(PUBLIC_KEY_PATH)):
+        if not (os.path.exists(PRIVATE_KEY_PATH) and os.path.exists(PUBLIC_KEY_PATH)):
             key = RSA.generate(2048)
 
-            with open(PRIVATE_KEY_PATH, "w") as file_out:
+            with open(PRIVATE_KEY_PATH, "wb") as file_out:
                 file_out.write(key.export_key())
 
-            with open(PUBLIC_KEY_PATH, "w") as file_out:
+            with open(PUBLIC_KEY_PATH, "wb") as file_out:
                 file_out.write(key.publickey().export_key())
 
         session_key = get_random_bytes(16)
@@ -68,7 +68,7 @@ class Encryption:
     def encrypt(self, message):
         try:
             if not isinstance(message, bytes):
-                raise Exception('Message should be of bytes type')
+                message = message.encode()
 
             return self.encryption_cipher.encrypt_and_digest(message)
         except ValueError:

@@ -7,8 +7,8 @@ import uuid
 
 from flask_sqlalchemy import SQLAlchemy
 
-from .settings import app
-from .encryption.encryption import encrypt
+from settings import app
+from encryption.encryption import encrypt
 
 
 DB = SQLAlchemy(app)
