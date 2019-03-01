@@ -6,7 +6,7 @@
 import os
 
 
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PEM_DIR = os.path.join(ROOT_DIR, 'keys')
 
 PRIVATE_KEY_PATH = os.path.join(PEM_DIR, 'private.pem')
