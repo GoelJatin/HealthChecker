@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from settings import app
 from encryption.encryption import encrypt
+from exception import NoSuchUserException
 
 
 DB = SQLAlchemy(app)
@@ -39,6 +40,24 @@ class User(DB.Model):
         new_user = User(username=_username, password=_password, salt=salt)
         DB.session.add(new_user)
         DB.session.commit()
+
+    def get_user(_username):
+        user = User.query.filter_by(username=_username).first()
+
+        if user:
+            return user
+
+        raise NoSuchUserException('No username exists with the given name')
+
+    def delete_user(_username, _password):
+        user = User.get_user(_username)
+
+        if user and encrypt(user.salt, _password) == user.password:
+            DB.session.delete(user)
+            DB.session.commit()
+            return True
+
+        return False
 
     def authenticate(_username, _password):
         user = User.query.filter_by(username=_username).first()
