@@ -143,8 +143,7 @@ def get_user(username):
 
         return jsonify(
             {
-                'username': user.username,
-                'password': b64encode(user.password)
+                'username': user.username
             }
         ), 200
     except NoSuchUserException:
