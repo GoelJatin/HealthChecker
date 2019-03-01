@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from settings import app
 from encryption.encryption import encrypt
-from exception import NoSuchUserException
+from exception import NoSuchUserException, UserAlreadyExistsException
 
 
 DB = SQLAlchemy(app)
@@ -30,16 +30,20 @@ class User(DB.Model):
         return User.query.all()
 
     def add_user(_username, _password):
-        salt = uuid.uuid4().bytes
+        try:
+            User.get_user(_username)
+            raise UserAlreadyExistsException('Please give a unique username')
+        except NoSuchUserException:
+            salt = uuid.uuid4().bytes
 
-        if not isinstance(_password, bytes):
-            _password = _password.encode()
+            if not isinstance(_password, bytes):
+                _password = _password.encode()
 
-        _password = encrypt(salt, _password)
+            _password = encrypt(salt, _password)
 
-        new_user = User(username=_username, password=_password, salt=salt)
-        DB.session.add(new_user)
-        DB.session.commit()
+            new_user = User(username=_username, password=_password, salt=salt)
+            DB.session.add(new_user)
+            DB.session.commit()
 
     def get_user(_username):
         user = User.query.filter_by(username=_username).first()

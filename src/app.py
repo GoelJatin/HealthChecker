@@ -16,7 +16,7 @@ from flask import jsonify, request, Response
 from settings import app
 from database.user_model import DB as DB_User, User
 from encryption.encryption import Encryption, Decryption
-from exception import NoSuchUserException
+from exception import NoSuchUserException, UserAlreadyExistsException
 
 from constants import PEM_DIR
 
@@ -127,12 +127,12 @@ def login():
         ).decode()
         return jsonify({'token': token}), 200
 
-    return Response(json.dumps({'error': 'Invalid username / password'}), 401, mimetype='application/json')
+    return Response(json.dumps({'error': 'Invalid username / password'}), 400, mimetype='application/json')
 
 
 @app.route('/users')
 def get_users():
-    return f"{User.get_all_users()}"
+    return Response(f"{User.get_all_users()}", 200, mimetype='text/plain')
 
 
 @app.route('/user/<username>')
@@ -150,6 +150,21 @@ def get_user(username):
         return Response(json.dumps({'error': 'Incorrect Username'}), 400, mimetype='application/json')
 
 
+@app.route('/user', methods=['POST'])
+@validate_token
+def add_user():
+    request_data = request.get_json()
+
+    if 'username' in request_data and 'password' in request_data:
+        try:
+            User.add_user(request_data['username'], request_data['password'])
+            return Response('', 201)
+        except UserAlreadyExistsException:
+            return Response(json.dumps({'error': 'A user already exists with the given username'}), 400, mimetype='application/json')
+
+    return Response(json.dumps({'error': 'Username / Password missing in the request body'}), 400, mimetype='application/json')
+
+
 @app.route('/user/<username>', methods=['DELETE'])
 @validate_token
 def delete_user(username):
@@ -162,7 +177,7 @@ def delete_user(username):
         except NoSuchUserException:
             return Response(json.dumps({'error': 'Incorrect Username'}), 400, mimetype='application/json')
 
-    return Response(json.dumps({'error': 'Password missing in the request body'}), 401, mimetype='application/json')
+    return Response(json.dumps({'error': 'Password missing in the request body'}), 400, mimetype='application/json')
 
 
 if __name__ == '__main__':

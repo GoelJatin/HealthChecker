@@ -5,3 +5,7 @@
 
 class NoSuchUserException(Exception):
     pass
+
+
+class UserAlreadyExistsException(Exception):
+    pass
