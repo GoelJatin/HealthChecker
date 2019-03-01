@@ -15,8 +15,14 @@ from flask import jsonify, request, Response
 
 from settings import app
 from database.user_model import DB as DB_User, User
+from database.resource_model import DB as DB_Resource, Resource
 from encryption.encryption import Encryption, Decryption
-from exception import NoSuchUserException, UserAlreadyExistsException
+from exception import (
+    NoSuchUserException,
+    UserAlreadyExistsException,
+    NoSuchResourceException,
+    ResourceAlreadyExistsException
+)
 
 from constants import PEM_DIR
 
@@ -180,10 +186,62 @@ def delete_user(username):
     return Response(json.dumps({'error': 'Password missing in the request body'}), 400, mimetype='application/json')
 
 
+@app.route('/resources')
+def get_resources():
+    return Response(f"{Resource.get_all_resources()}", 200, mimetype='text/plain')
+
+
+@app.route('/resource/<hostname>')
+@validate_token
+def get_resource(hostname):
+    try:
+        resource = Resource.get_resource(hostname)
+
+        return jsonify(
+            {
+                'hostname': resource.hostname,
+                'username': resource.username
+            }
+        ), 200
+    except NoSuchResourceException:
+        return Response(json.dumps({'error': 'Incorrect hostname'}), 400, mimetype='application/json')
+
+
+@app.route('/resource', methods=['POST'])
+@validate_token
+def add_resource():
+    request_data = request.get_json()
+
+    if 'hostname' in request_data and 'username' in request_data and 'password' in request_data:
+        try:
+            Resource.add_resource(request_data['hostname'], request_data['username'], request_data['password'])
+            return Response('', 201)
+        except ResourceAlreadyExistsException:
+            return Response(json.dumps({'error': 'A resource already exists with the given hostname'}), 400, mimetype='application/json')
+
+    return Response(json.dumps({'error': 'Hostname / Username / Password missing in the request body'}), 400, mimetype='application/json')
+
+
+@app.route('/resource/<hostname>', methods=['DELETE'])
+@validate_token
+def delete_resource(hostname):
+    request_data = request.get_json()
+
+    if 'username' in request_data and 'password' in request_data:
+        try:
+            if Resource.delete_resource(hostname, request_data['username'], request_data['password']):
+                return Response('', 200, mimetype='application/json')
+        except NoSuchResourceException:
+            return Response(json.dumps({'error': 'Incorrect hostname'}), 400, mimetype='application/json')
+
+    return Response(json.dumps({'error': 'Username / Password missing in the request body'}), 400, mimetype='application/json')
+
+
 if __name__ == '__main__':
     os.makedirs(PEM_DIR, exist_ok=True)
 
     if not os.path.exists(f'{os.path.join(os.getcwd(), "database.db")}'):
         DB_User.create_all()
+        DB_Resource.create_all()
 
     app.run(port=5000)

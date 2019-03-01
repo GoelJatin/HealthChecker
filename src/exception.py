@@ -9,3 +9,15 @@ class NoSuchUserException(Exception):
 
 class UserAlreadyExistsException(Exception):
     pass
+
+
+class NoSuchResourceException(Exception):
+    pass
+
+
+class ResourceAlreadyExistsException(Exception):
+    pass
+
+
+class EncryptionFailedException(Exception):
+    pass
