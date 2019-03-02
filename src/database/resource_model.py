@@ -3,16 +3,19 @@
 @author: Jatin Goel
 """
 
-from base64 import b64encode
+from base64 import b64encode, b64decode, binascii
 
 from flask_sqlalchemy import SQLAlchemy
 
 from ..settings import APP
 from ..encryption.encryption import Encryption
+from ..encryption.decryption import Decryption
 from ..exception import (
     NoSuchResourceException,
     ResourceAlreadyExistsException,
-    EncryptionFailedException
+    EncryptionFailedException,
+    DecryptionFailedException,
+    CorruptedDataException
 )
 
 
@@ -36,6 +39,45 @@ class Resource(DB.Model):
             f'for User: {self.username}, '
             f'with Interval: {self.interval}'
         )
+
+    @staticmethod
+    def _encrypt_password(_password):
+        """Encrypts and returns the resource password."""
+        encryption = Encryption()
+
+        try:
+            data = encryption.encrypt(_password)
+        except ValueError as error:
+            raise EncryptionFailedException(
+                f'Failed to encrypt the message due to the error: [{error}]'
+            )
+
+        for key in data:
+            data[key] = b64encode(data[key])
+
+        return b64encode(str(data).encode()).decode()
+
+    @staticmethod
+    def _decrypt_password(_password):
+        """Decrypts and returns the resource password."""
+        _password = b64decode(_password)
+        data = eval(_password)
+
+        try:
+            for key in data:
+                data[key] = b64decode(data[key])
+        except binascii.Error:
+            raise CorruptedDataException('Data is corrupted')
+
+        try:
+            decryption = Decryption(data['enc_session_key'], data['nonce'])
+            _password = decryption.decrypt((data['ciphertext'], data['tag']))
+        except ValueError as error:
+            raise DecryptionFailedException(
+                f'Failed to decrypt the message due to the error: [{error}]'
+            )
+
+        return _password.decode()
 
     def get_all_resources():
         """Returns the list of all the resources added to the Table."""
@@ -68,19 +110,7 @@ class Resource(DB.Model):
             Resource.get_resource(_hostname)
             raise ResourceAlreadyExistsException('Please give a unique hostname')
         except NoSuchResourceException:
-            encryption = Encryption()
-
-            try:
-                data = encryption.encrypt(_password)
-            except ValueError as error:
-                raise EncryptionFailedException(
-                    f'Failed to encrypt the message due to the error: [{error}]'
-                )
-
-            for key in data:
-                data[key] = b64encode(data[key])
-
-            _password = b64encode(str(data).encode()).decode()
+            _password = Resource._encrypt_password(_password)
 
             new_resource = Resource(
                 hostname=_hostname,
@@ -103,6 +133,7 @@ class Resource(DB.Model):
     def delete_resource(_hostname, _username, _password):
         """Deletes the resource with the given hostname, if username and password also matches."""
         resource = Resource.get_resource(_hostname)
+        _password = Resource._encrypt_password(_password)
 
         if resource and _username == resource.username and _password == resource.password:
             DB.session.delete(resource)
