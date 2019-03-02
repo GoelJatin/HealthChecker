@@ -10,9 +10,14 @@ from base64 import b64encode
 
 from flask_sqlalchemy import SQLAlchemy
 
-from settings import app
-from encryption.encryption import encrypt, Encryption
-from exception import NoSuchResourceException, ResourceAlreadyExistsException, EncryptionFailedException
+from ..settings import app
+from ..encryption.encrypt import encrypt
+from ..encryption.encryption import Encryption
+from ..exception import (
+    NoSuchResourceException,
+    ResourceAlreadyExistsException,
+    EncryptionFailedException
+)
 
 
 DB = SQLAlchemy(app)

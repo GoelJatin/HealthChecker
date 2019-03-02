@@ -7,9 +7,9 @@ import uuid
 
 from flask_sqlalchemy import SQLAlchemy
 
-from settings import app
-from encryption.encryption import encrypt
-from exception import NoSuchUserException, UserAlreadyExistsException
+from ..settings import app
+from ..encryption.encrypt import encrypt
+from ..exception import NoSuchUserException, UserAlreadyExistsException
 
 
 DB = SQLAlchemy(app)
