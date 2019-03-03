@@ -17,8 +17,8 @@ from flask import jsonify, request, Response
 from settings import APP as app
 from database.user_model import DB as DB_User, User
 from database.resource_model import DB as DB_Resource, Resource
-from encryption.encryption import Encryption
-from encryption.decryption import Decryption
+from encryption_ops.encryption import Encryption
+from encryption_ops.decryption import Decryption
 from exception import (
     NoSuchUserException,
     UserAlreadyExistsException,

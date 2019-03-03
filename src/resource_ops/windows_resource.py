@@ -89,7 +89,7 @@ from script_generator import ScriptGenerator
 from output_formatter import WindowsOutput
 
 
-from scripts import (
+from scripts_defines import (
     CREDENTIALS,
     EXECUTE_COMMAND
 )
@@ -157,6 +157,9 @@ class WindowsResource(Resource):
             del exception
 
         self._os_info = "WINDOWS"
+        self.credentials_file = None
+        self._ssh = None
+        self._ip_address = None
 
     def _login(self):
         """Generates the Credentials File for the machine,
@@ -433,6 +436,13 @@ class WindowsResource(Resource):
         return output
 
     def disconnect(self):
+        """Disconnects the current session with the resource.
+
+            Deletes the object's attributes.
+
+            Removes the Credentials File as well, if it was created.
+
+        """
         if self.is_local_machine:
             __ = subprocess.run(
                 f'powershell.exe Set-ExecutionPolicy {self._execution_policy} -Force',

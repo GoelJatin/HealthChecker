@@ -8,8 +8,8 @@ from base64 import b64encode, b64decode, binascii
 from flask_sqlalchemy import SQLAlchemy
 
 from settings import APP
-from encryption.encryption import Encryption
-from encryption.decryption import Decryption
+from encryption_ops.encryption import Encryption
+from encryption_ops.decryption import Decryption
 from exception import (
     NoSuchResourceException,
     ResourceAlreadyExistsException,
