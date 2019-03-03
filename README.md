@@ -81,3 +81,21 @@ To launch the webservice, launch command prompt as **Administrator** from the ro
     >>> python src
         OR
     >>> python src\app.py
+
+
+## Steps to test the webservice
+
+1. Execute the steps under the Usage section above
+1. Open Postman
+1. Call **/Login** with the credentials shared under Design section
+1. Copy the token and pass it under headers for subsequent API calls
+1. Call **/Resource** to add a new Resource
+1. **/IsHealthy** to check the service health
+    -   Returns HTTP Status **200**, if all the resources are healthy
+    -   Returns HTTP Status **503**, if any of the resource is unhealthy
+
+Other endpoints and their details can be retrieved using the info from **Endpoints** section above.
+
+## Pending items
+
+Due to limited time, I could only test it out manually, but could not write any Unit Tests.
