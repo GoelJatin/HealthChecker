@@ -67,3 +67,7 @@ The Resource table stores the **hostname**, **username**, **password**, and **in
 Interval value is set default to 60 (in seconds).
 
 Resource password is encrypted using AES cipher and RSA keys.
+
+
+### Endpoints
+All the endpoints and their info can be retrieved by calling the **/Routes** or **/routes** endpoint.
