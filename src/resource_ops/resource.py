@@ -460,6 +460,27 @@ class Resource:
         """
         raise NotImplementedError('Method Not Implemented by the Child Class')
 
+    def is_healthy(self):
+        """Checks if the resource is healthy or not.
+
+            A resource health check can be done using various parameters.
+
+            Here, we'll be doing a very basic check using the below parameters:
+
+                - Network Check:    check if the machine has internet connectivity
+
+                - Disk space check: check whether the resource has at least 1 GB free space
+                in C:\\ (for Windows) or /root (for UNIX)
+
+            Args:
+                None
+
+            Returns:
+                bool:   boolean value specifying whether the resource is healthy or not
+
+        """
+        raise NotImplementedError('Method Not Implemented by the Child Class')
+
     def disconnect(self):
         """Disconnects the current session with the resource.
 
@@ -470,16 +491,16 @@ class Resource:
         """
         self._is_connected = False
 
-        del self.username
-        del self.password
-
         try:
             os.unlink(self.credentials_file)
         except (OSError, TypeError):
             # Continue silently, as the file might already have been removed
             pass
 
-        del self.credentials_file
-
-        del self._client
-        del self._script_generator
+        try:
+            del self.username
+            del self.credentials_file
+            del self._client
+            del self._script_generator
+        except AttributeError:
+            pass

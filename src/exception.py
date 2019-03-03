@@ -34,3 +34,7 @@ class DecryptionFailedException(Exception):
 
 class CorruptedDataException(Exception):
     """Base64 Encoded data is corrupted."""
+
+
+class InvalidOperationException(Exception):
+    """Given operation is invalid or not supported."""
