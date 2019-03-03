@@ -537,7 +537,8 @@ def get_resource(hostname):
         return jsonify(
             {
                 'hostname': resource.hostname,
-                'username': resource.username
+                'username': resource.username,
+                'interval': resource.interval
             }
         ), 200
     except NoSuchResourceException:
@@ -546,6 +547,66 @@ def get_resource(hostname):
             400,
             mimetype='application/json'
         )
+
+
+@app.route('/Resource/<hostname>', methods=['PUT'])
+@app.route('/resource/<hostname>', methods=['PUT'])
+@validate_token
+def update_resource_credentials(hostname):
+    """Update the credentials of the resource that matches the given hostname."""
+    request_data = request.get_json()
+
+    if 'username' in request_data and 'password' in request_data:
+        try:
+            Resource.update_resource(
+                request_data['hostname'],
+                request_data['username'],
+                request_data['password'],
+                request_data.get('interval')
+            )
+
+            return Response('', 200)
+        except NoSuchResourceException:
+            return Response(
+                json.dumps({'error': 'Incorrect hostname'}),
+                400,
+                mimetype='application/json'
+            )
+
+    return Response(
+        json.dumps({'error': 'Username / Password missing in the request body'}),
+        400,
+        mimetype='application/json'
+    )
+
+
+@app.route('/Resource/<hostname>', methods=['PATCH'])
+@app.route('/resource/<hostname>', methods=['PATCH'])
+@validate_token
+def update_resource_interval(hostname):
+    """Update the polling interval period of the resource that matches the given hostname."""
+    request_data = request.get_json()
+
+    if 'interval' in request_data:
+        try:
+            Resource.update_resource_interval(
+                request_data['hostname'],
+                request_data['interval']
+            )
+
+            return Response('', 200)
+        except NoSuchResourceException:
+            return Response(
+                json.dumps({'error': 'Incorrect hostname'}),
+                400,
+                mimetype='application/json'
+            )
+
+    return Response(
+        json.dumps({'error': 'Interval value missing in the request body'}),
+        400,
+        mimetype='application/json'
+    )
 
 
 @app.route('/Resource/<hostname>', methods=['DELETE'])
@@ -642,6 +703,8 @@ def is_healthy():
 
 
 def main():
+    global HEALTH_AGGREGATOR
+
     os.makedirs(PEM_DIR, exist_ok=True)
 
     if not os.path.exists(f'{os.path.join(os.getcwd(), "database.db")}'):
@@ -650,8 +713,9 @@ def main():
 
         User.add_user('SpiceWorks', 'HealthChecker')
 
-    app.run(port=5000)
     HEALTH_AGGREGATOR = HealthAggregator()
+    app.run(port=5000)
+    HEALTH_AGGREGATOR.cleanup()
 
 
 if __name__ == '__main__':
