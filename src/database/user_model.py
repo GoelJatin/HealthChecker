@@ -58,13 +58,13 @@ class User(DB.Model):
 
             _password = encrypt(salt, _password)
 
-            new_user = User(username=_username, password=_password, salt=salt)
+            new_user = User(username=_username.lower(), password=_password, salt=salt)
             DB.session.add(new_user)
             DB.session.commit()
 
     def get_user(_username):
         """Returns a SQLAlchemy object of the row (user) that matches the given username."""
-        user = User.query.filter_by(username=_username).first()
+        user = User.query.filter_by(username=_username.lower()).first()
 
         if user:
             return user
@@ -84,9 +84,12 @@ class User(DB.Model):
 
     def authenticate(_username, _password):
         """Checks if a user with the given username and password exists in the table or not."""
-        user = User.query.filter_by(username=_username).first()
+        try:
+            user = User.get_user(_username)
 
-        if user and encrypt(user.salt, _password) == user.password:
-            return True
+            if user and encrypt(user.salt, _password) == user.password:
+                return True
 
-        return False
+            return False
+        except NoSuchUserException:
+            return False
