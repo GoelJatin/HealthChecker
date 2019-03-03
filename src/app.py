@@ -14,18 +14,18 @@ import jwt
 
 from flask import jsonify, request, Response
 
-from .settings import APP as app
-from .database.user_model import DB as DB_User, User
-from .database.resource_model import DB as DB_Resource, Resource
-from .encryption.encryption import Encryption
-from .encryption.decryption import Decryption
-from .exception import (
+from settings import APP as app
+from database.user_model import DB as DB_User, User
+from database.resource_model import DB as DB_Resource, Resource
+from encryption.encryption import Encryption
+from encryption.decryption import Decryption
+from exception import (
     NoSuchUserException,
     UserAlreadyExistsException,
     NoSuchResourceException,
     ResourceAlreadyExistsException
 )
-from .constants import PEM_DIR
+from constants import PEM_DIR
 
 
 def validate_token(func):
@@ -56,6 +56,7 @@ def validate_token(func):
 
 
 @app.route('/Encrypt', methods=['POST'])
+@app.route('/encrypt', methods=['POST'])
 def encrypt():
     """Encrypts the **message** parameter received in the request payload,
         and returns the encrypted text, and other details required for its
@@ -131,6 +132,7 @@ def encrypt():
 
 
 @app.route('/Decrypt', methods=['POST'])
+@app.route('/decrypt', methods=['POST'])
 def decrypt():
     """Decrypts the **ciphertext** parameter received in the request payload
         using the other parameters, **enc_session_key**, **nonce**, **tag**,
@@ -236,6 +238,7 @@ def decrypt():
 
 
 @app.route('/Login', methods=['POST'])
+@app.route('/login', methods=['POST'])
 def login():
     """Validates the given username and password, and returns a JWT token if
         user is authenticated, else returns HTTP 400.
@@ -289,12 +292,14 @@ def login():
 
 
 @app.route('/Users')
+@app.route('/users')
 def get_users():
     """Returns the list of all the Users stored in the database."""
     return Response(f"{User.get_all_users()}", 200, mimetype='text/plain')
 
 
 @app.route('/User', methods=['POST'])
+@app.route('/user', methods=['POST'])
 @validate_token
 def add_user():
     """Adds a new User to the application.
@@ -356,6 +361,7 @@ def add_user():
 
 
 @app.route('/User/<username>')
+@app.route('/user/<username>')
 @validate_token
 def get_user(username):
     """Returns the information for the given username."""
@@ -376,6 +382,7 @@ def get_user(username):
 
 
 @app.route('/User/<username>', methods=['DELETE'])
+@app.route('/user/<username>', methods=['DELETE'])
 @validate_token
 def delete_user(username):
     """Deletes the user with the given Username.
@@ -433,12 +440,14 @@ def delete_user(username):
 
 
 @app.route('/Resources')
+@app.route('/resources')
 def get_resources():
     """Returns the list of all the Resources stored in the database."""
     return Response(f"{Resource.get_all_resources()}", 200, mimetype='text/plain')
 
 
 @app.route('/Resource', methods=['POST'])
+@app.route('/resource', methods=['POST'])
 @validate_token
 def add_resource():
     """Adds a new Resource to the application.
@@ -484,7 +493,10 @@ def add_resource():
     if 'hostname' in request_data and 'username' in request_data and 'password' in request_data:
         try:
             Resource.add_resource(
-                request_data['hostname'], request_data['username'], request_data['password']
+                request_data['hostname'],
+                request_data['username'],
+                request_data['password'],
+                request_data.get('interval', 60)
             )
             return Response('', 201)
         except ResourceAlreadyExistsException:
@@ -502,6 +514,7 @@ def add_resource():
 
 
 @app.route('/Resource/<hostname>')
+@app.route('/resource/<hostname>')
 @validate_token
 def get_resource(hostname):
     """Returns the information for the given hostname."""
@@ -522,6 +535,7 @@ def get_resource(hostname):
         )
 
 
+@app.route('/Resource/<hostname>', methods=['DELETE'])
 @app.route('/resource/<hostname>', methods=['DELETE'])
 @validate_token
 def delete_resource(hostname):
@@ -583,7 +597,24 @@ def delete_resource(hostname):
     )
 
 
-if __name__ == '__main__':
+@app.route('/Routes')
+@app.route('/routes')
+def get_routes():
+    output = [f'{"S. No.":6}\t{"Endpoint":50}\t{"Method":8}\n']
+
+    for index, rule in enumerate(app.url_map.iter_rules()):
+        for i, method in enumerate(rule.methods):
+            output.append(f'{index + 1 if i == 0 else "":<6}\t{rule.rule:50}\t{method:10}')
+
+        try:
+            output.append(f'\n{eval(rule.endpoint).__doc__}\n')
+        except NameError:
+            output.append('\n')
+
+    return Response('\n'.join(output), 200, mimetype='text/plain')
+
+
+def main():
     os.makedirs(PEM_DIR, exist_ok=True)
 
     if not os.path.exists(f'{os.path.join(os.getcwd(), "database.db")}'):
@@ -593,3 +624,7 @@ if __name__ == '__main__':
         User.add_user('SpiceWorks', 'HealthChecker')
 
     app.run(port=5000)
+
+
+if __name__ == '__main__':
+    main()
