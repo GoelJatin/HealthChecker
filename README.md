@@ -25,6 +25,7 @@ Spiceworks - Health Checker Assignment
 - Encoding:     **SHA512**
 - Communications:
     - Windows:     **PowerShell Remoting**
+        PowerShell version should be 4.0 and above
     - UNIX:        **SSH using Paramiko**
 
 
@@ -71,3 +72,12 @@ Resource password is encrypted using AES cipher and RSA keys.
 
 ### Endpoints
 All the endpoints and their info can be retrieved by calling the **/Routes** or **/routes** endpoint.
+
+
+## Usage
+
+To launch the webservice, launch command prompt as **Administrator** from the root directory and run:
+
+    >>> python src
+        OR
+    >>> python src\app.py
