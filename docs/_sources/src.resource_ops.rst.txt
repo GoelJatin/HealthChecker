@@ -1,0 +1,78 @@
+src.resource\_ops package
+=========================
+
+Submodules
+----------
+
+src.resource\_ops.exception module
+----------------------------------
+
+.. automodule:: src.resource_ops.exception
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.resource\_ops.output\_formatter module
+------------------------------------------
+
+.. automodule:: src.resource_ops.output_formatter
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.resource\_ops.pyping module
+-------------------------------
+
+.. automodule:: src.resource_ops.pyping
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.resource\_ops.resource module
+---------------------------------
+
+.. automodule:: src.resource_ops.resource
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.resource\_ops.script\_generator module
+------------------------------------------
+
+.. automodule:: src.resource_ops.script_generator
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.resource\_ops.scripts\_defines module
+-----------------------------------------
+
+.. automodule:: src.resource_ops.scripts_defines
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.resource\_ops.unix\_resource module
+---------------------------------------
+
+.. automodule:: src.resource_ops.unix_resource
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.resource\_ops.windows\_resource module
+------------------------------------------
+
+.. automodule:: src.resource_ops.windows_resource
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: src.resource_ops
+    :members:
+    :undoc-members:
+    :show-inheritance:

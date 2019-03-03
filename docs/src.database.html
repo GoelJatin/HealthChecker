@@ -1,0 +1,275 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>src.database package &#8212; SpiceWorks HealthChecker 1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src.encryption_ops package" href="src.encryption_ops.html" />
+    <link rel="prev" title="src package" href="src.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="src-database-package">
+<h1>src.database package<a class="headerlink" href="#src-database-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-src.database.resource_model">
+<span id="src-database-resource-model-module"></span><h2>src.database.resource_model module<a class="headerlink" href="#module-src.database.resource_model" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author: Jatin Goel</p>
+<dl class="class">
+<dt id="src.database.resource_model.Resource">
+<em class="property">class </em><code class="descclassname">src.database.resource_model.</code><code class="descname">Resource</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/database/resource_model.html#Resource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.database.resource_model.Resource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Model</span></code></p>
+<p>Table for storing Resource related information.</p>
+<dl class="method">
+<dt id="src.database.resource_model.Resource.add_resource">
+<code class="descname">add_resource</code><span class="sig-paren">(</span><em>_username</em>, <em>_password</em>, <em>_interval=60</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/database/resource_model.html#Resource.add_resource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.database.resource_model.Resource.add_resource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new resource to the Table, if it does not exists.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">_hostname   (str):  hostname / ip address of the resource</p>
+<p>_username   (str):  username of the resource</p>
+<p>_password   (str):  password of the resource</p>
+<p>_interval   (int):  interval value to be used b/w consecutive pings (in seconds)</p>
+<blockquote class="last">
+<div>default:    60</div></blockquote>
+</dd>
+<dt>Returns:</dt>
+<dd>None:   if the resource is added successfully</dd>
+<dt>Raises:</dt>
+<dd><p class="first">ResourceAlreadyExistsException:     if resource already exists with given hostname</p>
+<p class="last">EncryptionFailedException:          if encryption failed for the given password</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.database.resource_model.Resource.delete_resource">
+<code class="descname">delete_resource</code><span class="sig-paren">(</span><em>_username</em>, <em>_password</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/database/resource_model.html#Resource.delete_resource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.database.resource_model.Resource.delete_resource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the resource with the given hostname, if username and password also matches.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.database.resource_model.Resource.get_all_resources">
+<code class="descname">get_all_resources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/database/resource_model.html#Resource.get_all_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.database.resource_model.Resource.get_all_resources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of all the resources added to the Table.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.database.resource_model.Resource.get_resource">
+<code class="descname">get_resource</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/database/resource_model.html#Resource.get_resource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.database.resource_model.Resource.get_resource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a SQLAlchemy object of the row (resource) that matches the given hostname.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="src.database.resource_model.Resource.hostname">
+<code class="descname">hostname</code><a class="headerlink" href="#src.database.resource_model.Resource.hostname" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="src.database.resource_model.Resource.id">
+<code class="descname">id</code><a class="headerlink" href="#src.database.resource_model.Resource.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="src.database.resource_model.Resource.interval">
+<code class="descname">interval</code><a class="headerlink" href="#src.database.resource_model.Resource.interval" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="src.database.resource_model.Resource.password">
+<code class="descname">password</code><a class="headerlink" href="#src.database.resource_model.Resource.password" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="src.database.resource_model.Resource.update_resource">
+<code class="descname">update_resource</code><span class="sig-paren">(</span><em>_username</em>, <em>_password</em>, <em>_interval=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/database/resource_model.html#Resource.update_resource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.database.resource_model.Resource.update_resource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the credentials of the resource with the given hostname.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.database.resource_model.Resource.update_resource_interval">
+<code class="descname">update_resource_interval</code><span class="sig-paren">(</span><em>_interval</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/database/resource_model.html#Resource.update_resource_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.database.resource_model.Resource.update_resource_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the interval of the resource with the given hostname.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="src.database.resource_model.Resource.username">
+<code class="descname">username</code><a class="headerlink" href="#src.database.resource_model.Resource.username" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.database.user_model">
+<span id="src-database-user-model-module"></span><h2>src.database.user_model module<a class="headerlink" href="#module-src.database.user_model" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author: Jatin Goel</p>
+<dl class="class">
+<dt id="src.database.user_model.User">
+<em class="property">class </em><code class="descclassname">src.database.user_model.</code><code class="descname">User</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/database/user_model.html#User"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.database.user_model.User" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Model</span></code></p>
+<p>Table for storing User related information.</p>
+<dl class="method">
+<dt id="src.database.user_model.User.add_user">
+<code class="descname">add_user</code><span class="sig-paren">(</span><em>_password</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/database/user_model.html#User.add_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.database.user_model.User.add_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new user to the Table, if it does not exists.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">_username   (str):  username of the new user</p>
+<p class="last">_password   (str):  password of the new user</p>
+</dd>
+<dt>Returns:</dt>
+<dd>None:   if the user is added successfully</dd>
+<dt>Raises:</dt>
+<dd>UserAlreadyExistsException:     if a user already exists with the given username</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.database.user_model.User.authenticate">
+<code class="descname">authenticate</code><span class="sig-paren">(</span><em>_password</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/database/user_model.html#User.authenticate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.database.user_model.User.authenticate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a user with the given username and password exists in the table or not.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.database.user_model.User.delete_user">
+<code class="descname">delete_user</code><span class="sig-paren">(</span><em>_password</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/database/user_model.html#User.delete_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.database.user_model.User.delete_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the user with the given username, if password also matches.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.database.user_model.User.get_all_users">
+<code class="descname">get_all_users</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/database/user_model.html#User.get_all_users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.database.user_model.User.get_all_users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of all the users added to the Table.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.database.user_model.User.get_user">
+<code class="descname">get_user</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/database/user_model.html#User.get_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.database.user_model.User.get_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a SQLAlchemy object of the row (user) that matches the given username.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="src.database.user_model.User.id">
+<code class="descname">id</code><a class="headerlink" href="#src.database.user_model.User.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="src.database.user_model.User.password">
+<code class="descname">password</code><a class="headerlink" href="#src.database.user_model.User.password" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="src.database.user_model.User.salt">
+<code class="descname">salt</code><a class="headerlink" href="#src.database.user_model.User.salt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="src.database.user_model.User.username">
+<code class="descname">username</code><a class="headerlink" href="#src.database.user_model.User.username" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.database">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src.database" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author: Jatin Goel</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SpiceWorks HealthChecker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">HealthChecker</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">HealthChecker</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="src.html">src package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">HealthChecker</a><ul>
+  <li><a href="src.html">src package</a><ul>
+      <li>Previous: <a href="src.html" title="previous chapter">src package</a></li>
+      <li>Next: <a href="src.encryption_ops.html" title="next chapter">src.encryption_ops package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jatin Goel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/src.database.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

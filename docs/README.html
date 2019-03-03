@@ -1,0 +1,212 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>HealthChecker &#8212; SpiceWorks HealthChecker 1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="HealthChecker" href="modules.html" />
+    <link rel="prev" title="Welcome to SpiceWorks HealthChecker’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="healthchecker">
+<h1>HealthChecker<a class="headerlink" href="#healthchecker" title="Permalink to this headline">¶</a></h1>
+<p>Spiceworks - Health Checker Assignment</p>
+<div class="section" id="task-description">
+<h2>Task Description<a class="headerlink" href="#task-description" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>A web service that receives thousands of requests per second</li>
+<li>You own a web application that receives thousands of requests per second</li>
+<li>Each web request is evaluated concurrently</li>
+<li>The application depends on several external resources</li>
+<li>Each of those resources might be in a healthy or unhealthy state</li>
+<li>Each resource will be monitored (polled) at different intervals in independent threads</li>
+<li>Assume the health of each resource will be random and change several times throughout the life of the application</li>
+<li>The health of each resource will be reported to a central <code class="docutils literal notranslate"><span class="pre">HealthAggregator</span></code> using the method <code class="docutils literal notranslate"><span class="pre">SetResource</span></code>—described below—and will contain the most recent health status for a single resource</li>
+<li>On each request to the main app, one of the steps to perform is call <code class="docutils literal notranslate"><span class="pre">HealthAggregator.IsHealthy()</span></code> to determine the overall health of the application</li>
+<li>If any one of the resources is unhealthy, your web application will respond to the web request with a 5XX code</li>
+<li>Only if all resources are healthy will the response code be a 2XX</li>
+</ul>
+</div>
+<div class="section" id="tech-stack">
+<h2>Tech stack<a class="headerlink" href="#tech-stack" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Language:     <strong>Python</strong></li>
+<li>Web Service:  <strong>Flask</strong></li>
+<li>ORM:          <strong>Flask SQLAlchemy</strong></li>
+<li>Database:     <strong>SQLite</strong></li>
+<li>Encryption:   <strong>AES with RSA keys</strong></li>
+<li>Encoding:     <strong>SHA512</strong></li>
+<li>Communications:<ul>
+<li>Windows:     <strong>PowerShell Remoting</strong>
+PowerShell version should be 4.0 and above</li>
+<li>UNIX:        <strong>SSH using Paramiko</strong></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="design">
+<h2>Design<a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h2>
+<p>Upon launch of the WebService, we first check if the database exists or not.
+If the database does not exists, we create, and add the <strong>User</strong> and <strong>Resource</strong> tables.
+We then check if the RSA private and public keys files exists or not.</p>
+<p>For each resource, we create an object of the <strong>Resource</strong> class, which executes the commands on the remote machine to get the details of the machine, and to check if the resource is healthy or not.</p>
+<p>The user table is initialized with one User in the beginning, which can perform all operations.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Username</span><span class="p">:</span>   <span class="n">SpiceWorks</span>
+<span class="n">Password</span><span class="p">:</span>   <span class="n">HealthChecker</span>
+</pre></div>
+</div>
+<div class="section" id="database">
+<h3>Database<a class="headerlink" href="#database" title="Permalink to this headline">¶</a></h3>
+<p>We are using SQLite database for this prototype.</p>
+<p>The database has the following tables:</p>
+<ul class="simple">
+<li><strong>User</strong>
+Table to store information related to the users which are allowed to perform advanced operations</li>
+<li><strong>Resource</strong>
+Table to store information related to the resources which needs to be monitored</li>
+</ul>
+<div class="section" id="user-table">
+<h4>User Table<a class="headerlink" href="#user-table" title="Permalink to this headline">¶</a></h4>
+<p>User table stores the <strong>username</strong>, <strong>password</strong>, and a special value <strong>salt</strong>.</p>
+<p>The password is one way encrypted (encoded) for security purposes.</p>
+<p>For authentication, we use the value of <strong>salt</strong> for the given username, and the password that the user gave, and check if the final value matches the value stored in the table.</p>
+</div>
+<div class="section" id="resource-table">
+<h4>Resource Table<a class="headerlink" href="#resource-table" title="Permalink to this headline">¶</a></h4>
+<p>The Resource table stores the <strong>hostname</strong>, <strong>username</strong>, <strong>password</strong>, and <strong>interval</strong> value of the resource.</p>
+<p>Interval value is set default to 60 (in seconds).</p>
+<p>Resource password is encrypted using AES cipher and RSA keys.</p>
+</div>
+</div>
+<div class="section" id="endpoints">
+<h3>Endpoints<a class="headerlink" href="#endpoints" title="Permalink to this headline">¶</a></h3>
+<p>All the endpoints and their info can be retrieved by calling the <strong>/Routes</strong> or <strong>/routes</strong> endpoint.</p>
+</div>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>To launch the webservice, launch command prompt as <strong>Administrator</strong> from the root directory and run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">python</span> <span class="n">src</span>
+<span class="go">    OR</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">python</span> <span class="n">src</span>\<span class="n">app</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="steps-to-test-the-webservice">
+<h2>Steps to test the webservice<a class="headerlink" href="#steps-to-test-the-webservice" title="Permalink to this headline">¶</a></h2>
+<ol class="simple">
+<li>Execute the steps under the Usage section above</li>
+<li>Open Postman</li>
+<li>Call <strong>/Login</strong> with the credentials shared under Design section</li>
+<li>Copy the token and pass it under headers for subsequent API calls</li>
+<li>Call <strong>/Resource</strong> to add a new Resource</li>
+<li><strong>/IsHealthy</strong> to check the service health<ul>
+<li>Returns HTTP Status <strong>200</strong>, if all the resources are healthy</li>
+<li>Returns HTTP Status <strong>503</strong>, if any of the resource is unhealthy</li>
+</ul>
+</li>
+</ol>
+<p>Other endpoints and their details can be retrieved using the info from <strong>Endpoints</strong> section above.</p>
+</div>
+<div class="section" id="pending-items">
+<h2>Pending items<a class="headerlink" href="#pending-items" title="Permalink to this headline">¶</a></h2>
+<p>Due to limited time, I could only test it out manually, but could not write any Unit Tests.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SpiceWorks HealthChecker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">HealthChecker</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#task-description">Task Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tech-stack">Tech stack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#design">Design</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#steps-to-test-the-webservice">Steps to test the webservice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pending-items">Pending items</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">HealthChecker</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to SpiceWorks HealthChecker’s documentation!</a></li>
+      <li>Next: <a href="modules.html" title="next chapter">HealthChecker</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jatin Goel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/README.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

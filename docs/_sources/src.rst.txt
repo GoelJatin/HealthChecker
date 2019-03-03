@@ -1,0 +1,63 @@
+src package
+===========
+
+Subpackages
+-----------
+
+.. toctree::
+
+    src.database
+    src.encryption_ops
+    src.resource_ops
+
+Submodules
+----------
+
+src.app module
+--------------
+
+.. automodule:: src.app
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.constants module
+--------------------
+
+.. automodule:: src.constants
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.exception module
+--------------------
+
+.. automodule:: src.exception
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.health\_aggregator module
+-----------------------------
+
+.. automodule:: src.health_aggregator
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+src.settings module
+-------------------
+
+.. automodule:: src.settings
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: src
+    :members:
+    :undoc-members:
+    :show-inheritance:

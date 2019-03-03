@@ -1,0 +1,586 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>src.resource_ops.windows_resource &#8212; SpiceWorks HealthChecker 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for src.resource_ops.windows_resource</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">@author: Jatin Goel</span>
+
+<span class="sd">File for performing operations on a resource.</span>
+
+<span class="sd">This file consists of a class: **WindowsResource**, which can connect to the remote</span>
+<span class="sd">Windows Machine, using PowerShell Remoting.</span>
+
+<span class="sd">The instance of this class can be used to perform various operations on a machine, like,</span>
+
+<span class="sd">    #.  Check if a Directory Exists or not</span>
+<span class="sd">    #.  Create a new Directory</span>
+<span class="sd">    #.  Rename a File / Folder</span>
+<span class="sd">    #.  Remove an existing Directory</span>
+<span class="sd">    #.  Get the Size of a File / Folder</span>
+<span class="sd">    #.  Check if a Registry exists or not</span>
+<span class="sd">    #.  Add / Update a Registry Key / Value</span>
+<span class="sd">    #.  Get the Value of a Registry Key</span>
+<span class="sd">    #.  Delete a Registry Key / Value</span>
+<span class="sd">    #.  Compare the contents of 2 Files / Folders</span>
+
+
+<span class="sd">WindowsResource</span>
+<span class="sd">===============</span>
+
+<span class="sd">    __init__()              --  initializes an instance of the Resource class</span>
+
+<span class="sd">    _login()                --  creates a connection to the remote client</span>
+
+<span class="sd">    _get_client_ip()        --  gets the ip address of the machine</span>
+
+<span class="sd">    execute()               --  execute an operation on the client</span>
+
+<span class="sd">    execute_command()       --  executes a command on the machine</span>
+
+<span class="sd">    get_storage_details()   --  returns the storage details of this machine</span>
+
+<span class="sd">    reboot_client()         --  reboots the machine</span>
+
+<span class="sd">    kill_process()          --  terminates a running process on the client machine</span>
+<span class="sd">    either with the given process name or the process id</span>
+
+<span class="sd">    disconnect()            --  disconnects the session with the machine</span>
+
+<span class="sd">Attributes</span>
+<span class="sd">----------</span>
+
+<span class="sd">    **os_info**     --  returns the OS details of the client</span>
+
+<span class="sd">    **os_sep**      --  returns the path separator based on the OS of the Machine</span>
+
+<span class="sd">    **ip_address**  --  returns IP address of the machine</span>
+
+
+<span class="sd">Usage</span>
+<span class="sd">-----</span>
+
+<span class="sd">    -   For creating an object of any resource, i.e., Windows / UNIX, the user should only</span>
+<span class="sd">        initialize an object of the Resource class, which internally takes care of detecting the OS</span>
+<span class="sd">        of the machine, and initializes the appropriate object.</span>
+
+<span class="sd">    -   Resource class object can be initialized in 2 ways:</span>
+
+<span class="sd">        -   If the resource is a Remote Machine:</span>
+
+<span class="sd">            &gt;&gt;&gt; resource = Resource(hostname, username, password)</span>
+
+<span class="sd">        -   If the resource is the Local Machine:</span>
+
+<span class="sd">            &gt;&gt;&gt; resource = Resource(local_machine_hostname)</span>
+
+<span class="sd">                        OR</span>
+
+<span class="sd">            &gt;&gt;&gt; resource = Resource()</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="kn">import</span> <span class="nn">paramiko</span>
+
+<span class="kn">from</span> <span class="nn">.resource</span> <span class="k">import</span> <span class="n">Resource</span>
+<span class="kn">from</span> <span class="nn">.script_generator</span> <span class="k">import</span> <span class="n">ScriptGenerator</span>
+<span class="kn">from</span> <span class="nn">.output_formatter</span> <span class="k">import</span> <span class="n">WindowsOutput</span>
+
+<span class="kn">from</span> <span class="nn">.scripts_defines</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">CREDENTIALS</span><span class="p">,</span>
+    <span class="n">EXECUTE_COMMAND</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.exception</span> <span class="k">import</span> <span class="n">GetStorageFailedException</span>
+
+
+<div class="viewcode-block" id="WindowsResource"><a class="viewcode-back" href="../../../src.resource_ops.html#src.resource_ops.windows_resource.WindowsResource">[docs]</a><span class="k">class</span> <span class="nc">WindowsResource</span><span class="p">(</span><span class="n">Resource</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for performing operations on a Windows client.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">hostname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes instance of the Resource class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            hostname        (str)       --  name / ip address of the client to connect to</span>
+
+<span class="sd">                if hostname is not provided, then the Resource object for the local machine</span>
+<span class="sd">                will be created</span>
+
+<span class="sd">                default:    None</span>
+
+<span class="sd">            username            (str)       --  username for the client to connect to</span>
+
+<span class="sd">                default:    None</span>
+
+<span class="sd">            password            (str)       --  password for the above specified user</span>
+
+<span class="sd">                default:    None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">hostname</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_local_machine</span><span class="p">:</span>
+            <span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="s1">&#39;powershell.exe Get-ExecutionPolicy&#39;</span><span class="p">,</span>
+                <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_execution_policy</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="c1"># Ensure the PowerShell execution policy is set to Remote Signed</span>
+            <span class="n">__</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="s1">&#39;powershell.exe Set-ExecutionPolicy RemoteSigned -Force&#39;</span><span class="p">,</span>
+                <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_script_generator</span> <span class="o">=</span> <span class="n">ScriptGenerator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hostname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">credentials_file</span><span class="p">)</span>
+
+        <span class="c1"># check if the credentials given are correct or not</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command</span><span class="p">(</span><span class="s1">&#39;Get-PSDrive&#39;</span><span class="p">)</span>
+        <span class="n">exception</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">exception</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">output</span>
+
+        <span class="k">if</span> <span class="s1">&#39;access is denied&#39;</span> <span class="ow">in</span> <span class="n">exception</span><span class="p">:</span>
+            <span class="c1"># if the operation raised exception, call disconnect, and raise</span>
+            <span class="c1"># Exception</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Authentication Failed. Invalid credentials provided.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s1">&#39;client cannot connect to the destination&#39;</span> <span class="ow">in</span> <span class="n">exception</span><span class="p">:</span>
+            <span class="c1"># if the operation raised exception, call disconnect, and raise</span>
+            <span class="c1"># Exception</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                <span class="s1">&#39;Failed to connect to the Machine. Please ensure the services are running&#39;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">exception</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_os_info</span> <span class="o">=</span> <span class="s2">&quot;WINDOWS&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ssh</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ip_address</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generates the Credentials File for the machine,</span>
+<span class="sd">            to use for performing operations on the remote client.</span>
+
+<span class="sd">            Raises:</span>
+<span class="sd">                Exception:</span>
+<span class="sd">                    if an error was returned on the error stream</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># if the controller machine is Linux, try connection to Windows Machine</span>
+        <span class="c1"># using SSH</span>
+        <span class="k">if</span> <span class="s1">&#39;linux&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ssh</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ssh</span><span class="o">.</span><span class="n">load_system_host_keys</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ssh</span><span class="o">.</span><span class="n">set_missing_host_key_policy</span><span class="p">(</span><span class="n">paramiko</span><span class="o">.</span><span class="n">AutoAddPolicy</span><span class="p">())</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ssh</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hostname</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">password</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">AuthenticationException</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Authentication Failed. Invalid credentials provided.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># otherwise use PowerShell for all communications</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Replace any white space ( ) in the PowerShell file path with &#39; &#39;</span>
+            <span class="c1"># e.g.; Original Script path:</span>
+            <span class="c1"># &quot;C:\\Program Files\\HealthChecker\\src\\resource\\Scripts\\Windows\\Creds.ps1&quot;</span>
+
+            <span class="c1"># Corrected Path:</span>
+            <span class="c1"># &quot;C:\\Program&#39; &#39;Files\\HealthChecker\\src\\resource\\Scripts\\Windows\\Creds.ps1&quot;</span>
+            <span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="s1">&#39;powershell&#39;</span><span class="p">,</span>
+                    <span class="n">CREDENTIALS</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&#39; &#39;&quot;</span><span class="p">),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hostname</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">username</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">password</span>
+                <span class="p">],</span>
+                <span class="c1"># HACK:the code gets hung at the process.communicate() call, if stdin is not included</span>
+                <span class="c1"># this issue is yet to be looked into on why this happens</span>
+                <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                <span class="n">shell</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+
+            <span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Failed to create credentials object.</span><span class="se">\n</span><span class="s1">Error: &quot;{error.decode()}&quot;&#39;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">credentials_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">_get_client_ip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the ip_address of the resource&quot;&quot;&quot;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;Test-Connection -ComputerName </span><span class="si">{self.hostname}</span><span class="s2"> -Count 1 | Select-Object IPV4Address&quot;</span>
+        <span class="n">cmd_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ip_address</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">cmd_output</span><span class="o">.</span><span class="n">formatted_output</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">os_sep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the path separator based on the OS of the resource.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Execution</span>
+<div class="viewcode-block" id="WindowsResource.execute"><a class="viewcode-back" href="../../../src.resource_ops.html#src.resource_ops.windows_resource.WindowsResource.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script</span><span class="p">,</span> <span class="n">script_arguments</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Execute the script remotely on a client using the credentials provided.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                script              (str)   --  path of the script file to execute on the</span>
+<span class="sd">                remote client</span>
+
+<span class="sd">                script_arguments    (str)   --  arguments to be passed to the script.</span>
+
+<span class="sd">                    default: None</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                object  -   instance of WindowsOutput class</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;linux&#39;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="n">sftp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ssh</span><span class="o">.</span><span class="n">open_sftp</span><span class="p">()</span>
+            <span class="n">file</span> <span class="o">=</span> <span class="n">script</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">destination</span> <span class="o">=</span> <span class="s1">&#39;c:/temp/&#39;</span>
+            <span class="k">if</span><span class="s1">&#39;temp&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sftp</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;c:&#39;</span><span class="p">):</span>
+                <span class="n">sftp</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
+            <span class="n">destination</span> <span class="o">=</span> <span class="n">destination</span> <span class="o">+</span> <span class="n">file</span>
+            <span class="n">sftp</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">destination</span><span class="p">)</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;powershell -File </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ssh</span><span class="o">.</span><span class="n">exec_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">stderr</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">status_event</span><span class="o">.</span><span class="n">_flag</span><span class="p">:</span>
+                <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">exit_code</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">sftp</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;c:/temp/&#39;</span><span class="p">):</span>
+                <span class="n">sftp</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">destination</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">WindowsOutput</span><span class="p">(</span><span class="n">exit_code</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Replace any white space ( ) in the PowerShell file path with &#39; &#39;</span>
+            <span class="c1"># e.g.; Original Script path:</span>
+            <span class="c1"># &quot;C:\\Program Files\\HealthChecker\\src\\resource\\Scripts\\Windows\\Creds.ps1&quot;</span>
+
+            <span class="c1"># Corrected Path:</span>
+            <span class="c1"># &quot;C:\\Program&#39; &#39;Files\\HealthChecker\\src\\resource\\Scripts\\Windows\\Creds.ps1&quot;</span>
+            <span class="n">process</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="s1">&#39;powershell&#39;</span><span class="p">,</span>
+                    <span class="n">script</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&#39; &#39;&quot;</span><span class="p">)</span>
+                <span class="p">],</span>
+                <span class="c1"># HACK:the code gets hung at the process.communicate() call, if stdin is not included</span>
+                <span class="c1"># this issue is yet to be looked into on why this happens</span>
+                <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+                <span class="n">shell</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">output</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">process</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">WindowsOutput</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">decode</span><span class="p">(),</span> <span class="n">error</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="WindowsResource.execute_command"><a class="viewcode-back" href="../../../src.resource_ops.html#src.resource_ops.windows_resource.WindowsResource.execute_command">[docs]</a>    <span class="k">def</span> <span class="nf">execute_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Executes a PowerShell command on the resource.</span>
+
+<span class="sd">            An instance of the **WindowsOutput** class is returned.</span>
+
+<span class="sd">            Output / Exception messages received from command execution are</span>
+<span class="sd">            available as the attributes of the class instance.</span>
+
+<span class="sd">                output_instance.output              --  raw output returned from the command</span>
+
+<span class="sd">                output_instance.formatted_output    --  o/p received after parsing the raw output</span>
+
+<span class="sd">                output_instance.exception           --  raw exception message</span>
+
+<span class="sd">                output_instance.exception_message   --  parsed exception message from the raw o/p</span>
+
+
+<span class="sd">        Args:</span>
+<span class="sd">            command     (str)   --  PowerShell command to be executed on the machine</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            object  -   instance of WindowsOutput class</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_script_generator</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="n">EXECUTE_COMMAND</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;command&#39;</span><span class="p">:</span> <span class="n">command</span>
+        <span class="p">}</span>
+        <span class="n">execute_command_script</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_script_generator</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">execute_command_script</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">execute_command_script</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span></div>
+
+<div class="viewcode-block" id="WindowsResource.get_storage_details"><a class="viewcode-back" href="../../../src.resource_ops.html#src.resource_ops.windows_resource.WindowsResource.get_storage_details">[docs]</a>    <span class="k">def</span> <span class="nf">get_storage_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the details of the Storage on the Client.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict    -   dictionary consisting the details of the storage on the client (in MB)</span>
+
+<span class="sd">            {</span>
+<span class="sd">                &#39;total&#39;: size_in_MB,</span>
+
+<span class="sd">                &#39;available&#39;: size_in_MB,</span>
+
+<span class="sd">                &#39;drive&#39;: {</span>
+
+<span class="sd">                    &#39;total&#39;: size_in_MB,</span>
+
+<span class="sd">                    &#39;available&#39;: size_in_MB,</span>
+<span class="sd">                }</span>
+<span class="sd">            }</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            GetStorageFailedException(Exception_Code, Exception_Message):</span>
+<span class="sd">                if failed to get the storage details for the machine</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command</span><span class="p">(</span><span class="s1">&#39;Get-PSDrive&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">exception_message</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">GetStorageFailedException</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">exception_code</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">exception_message</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">output</span><span class="o">.</span><span class="n">exception</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">GetStorageFailedException</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">exception_code</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">exception</span><span class="p">)</span>
+
+        <span class="n">storage_dict</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;total&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;available&#39;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">formatted_output</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">drive_name</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">used_space</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">free_space</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1024.0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">total_space</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">free_space</span> <span class="o">+</span> <span class="n">used_space</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+                <span class="n">storage_dict</span><span class="p">[</span><span class="n">drive_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;total&#39;</span><span class="p">:</span> <span class="n">total_space</span><span class="p">,</span>
+                    <span class="s1">&#39;available&#39;</span><span class="p">:</span> <span class="n">free_space</span>
+                <span class="p">}</span>
+
+                <span class="n">storage_dict</span><span class="p">[</span><span class="s1">&#39;total&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">total_space</span>
+                <span class="n">storage_dict</span><span class="p">[</span><span class="s1">&#39;available&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">free_space</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+        <span class="k">return</span> <span class="n">storage_dict</span></div>
+
+<div class="viewcode-block" id="WindowsResource.reboot_client"><a class="viewcode-back" href="../../../src.resource_ops.html#src.resource_ops.windows_resource.WindowsResource.reboot_client">[docs]</a>    <span class="k">def</span> <span class="nf">reboot_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reboots the Resource.</span>
+
+<span class="sd">            Please NOTE that the connectivity will go down in this scenario, and the Resource</span>
+<span class="sd">            class may not be able to re-establish the connection to the Machine.</span>
+
+<span class="sd">            In such cases, the user will have to initialize the Resource class instance again.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                None</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                object  -   instance of the WindowsOutput class</span>
+
+<span class="sd">            Raises:</span>
+<span class="sd">                Exception:</span>
+<span class="sd">                    if failed to reboot the client</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command</span><span class="p">(</span><span class="s1">&#39;Restart-Computer -Force&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">exception_message</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">exception_code</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">exception_message</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">output</span><span class="o">.</span><span class="n">exception</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">exception_code</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">exception</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span></div>
+
+<div class="viewcode-block" id="WindowsResource.kill_process"><a class="viewcode-back" href="../../../src.resource_ops.html#src.resource_ops.windows_resource.WindowsResource.kill_process">[docs]</a>    <span class="k">def</span> <span class="nf">kill_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">process_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">process_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Terminates a running process on the client machine either with the given</span>
+<span class="sd">            process name or the process id.</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                process_name    (str)   --  name of the process to be terminate</span>
+
+<span class="sd">                process_id      (str)   --  ID of the process ID to be terminated</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                object  -   instance of the WindowsOutput class</span>
+
+<span class="sd">            Raises:</span>
+<span class="sd">                Exception:</span>
+<span class="sd">                    if neither the process name nor the process id is given</span>
+
+<span class="sd">                    if failed to kill the process</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">process_name</span><span class="p">:</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;Stop-Process -Name </span><span class="si">{process_name}</span><span class="s2"> -Force&quot;</span>
+        <span class="k">elif</span> <span class="n">process_id</span><span class="p">:</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;Stop-Process -Id </span><span class="si">{process_id}</span><span class="s2"> -Force&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Please provide either the process Name or the process ID&#39;</span><span class="p">)</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">exception_message</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">exception_code</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">exception_message</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">output</span><span class="o">.</span><span class="n">exception</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">exception_code</span><span class="p">,</span> <span class="n">output</span><span class="o">.</span><span class="n">exception</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span></div>
+
+<div class="viewcode-block" id="WindowsResource.is_healthy"><a class="viewcode-back" href="../../../src.resource_ops.html#src.resource_ops.windows_resource.WindowsResource.is_healthy">[docs]</a>    <span class="k">def</span> <span class="nf">is_healthy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks if the resource is healthy or not.</span>
+
+<span class="sd">            A resource health check can be done using various parameters.</span>
+
+<span class="sd">            Here, we&#39;ll be doing a very basic check using the below parameters:</span>
+
+<span class="sd">                - Network Check:    check if the machine has internet connectivity</span>
+
+<span class="sd">                - Disk space check: check whether the resource has at least</span>
+<span class="sd">                **1 GB** free space in C:\\</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                None</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                bool:   boolean value specifying whether the resource is healthy or not</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># check network if the resource is local</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_local_machine</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute_command</span><span class="p">(</span>
+                    <span class="s2">&quot;(Get-NetRoute | ? DestinationPrefix -eq &#39;0.0.0.0/0&#39; | Get-NetIPInterface &quot;</span>
+                    <span class="s2">&quot;| Where ConnectionState -eq &#39;Connected&#39;).ConnectionState&quot;</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">exception</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="c1"># otherwise, for remote machines, network check is done as part of getting the storage details</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_storage_details</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;available&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1024</span>
+
+        <span class="c1"># get storage details raises exception if the machine is not reachable</span>
+        <span class="k">except</span> <span class="n">GetStorageFailedException</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="WindowsResource.disconnect"><a class="viewcode-back" href="../../../src.resource_ops.html#src.resource_ops.windows_resource.WindowsResource.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Disconnects the current session with the resource.</span>
+
+<span class="sd">            Deletes the object&#39;s attributes.</span>
+
+<span class="sd">            Removes the Credentials File as well, if it was created.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_local_machine</span><span class="p">:</span>
+            <span class="n">__</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="n">f</span><span class="s1">&#39;powershell.exe Set-ExecutionPolicy </span><span class="si">{self._execution_policy}</span><span class="s1"> -Force&#39;</span><span class="p">,</span>
+                <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span>
+            <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">SpiceWorks HealthChecker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html">HealthChecker</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">HealthChecker</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jatin Goel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

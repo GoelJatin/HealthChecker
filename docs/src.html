@@ -1,0 +1,697 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>src package &#8212; SpiceWorks HealthChecker 1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src.database package" href="src.database.html" />
+    <link rel="prev" title="HealthChecker" href="modules.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="src-package">
+<h1>src package<a class="headerlink" href="#src-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="src.database.html">src.database package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src.database.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.database.html#module-src.database.resource_model">src.database.resource_model module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.database.html#module-src.database.user_model">src.database.user_model module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.database.html#module-src.database">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src.encryption_ops.html">src.encryption_ops package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src.encryption_ops.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.encryption_ops.html#module-src.encryption_ops.decryption">src.encryption_ops.decryption module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.encryption_ops.html#module-src.encryption_ops.encrypt">src.encryption_ops.encrypt module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.encryption_ops.html#module-src.encryption_ops.encryption">src.encryption_ops.encryption module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.encryption_ops.html#module-src.encryption_ops">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src.resource_ops.html">src.resource_ops package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="src.resource_ops.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.resource_ops.html#module-src.resource_ops.exception">src.resource_ops.exception module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.resource_ops.html#module-src.resource_ops.output_formatter">src.resource_ops.output_formatter module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.resource_ops.html#module-src.resource_ops.pyping">src.resource_ops.pyping module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.resource_ops.html#module-src.resource_ops.resource">src.resource_ops.resource module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="src.resource_ops.html#resource">Resource</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src.resource_ops.html#attributes">Attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.resource_ops.html#usage">Usage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="src.resource_ops.html#module-src.resource_ops.script_generator">src.resource_ops.script_generator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="src.resource_ops.html#id3">Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="src.resource_ops.html#module-src.resource_ops.scripts_defines">src.resource_ops.scripts_defines module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="src.resource_ops.html#module-src.resource_ops.unix_resource">src.resource_ops.unix_resource module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="src.resource_ops.html#unixresource">UnixResource</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src.resource_ops.html#id4">Attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.resource_ops.html#id5">Usage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="src.resource_ops.html#module-src.resource_ops.windows_resource">src.resource_ops.windows_resource module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="src.resource_ops.html#windowsresource">WindowsResource</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="src.resource_ops.html#id6">Attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="src.resource_ops.html#id7">Usage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="src.resource_ops.html#module-src.resource_ops">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-src.app">
+<span id="src-app-module"></span><h2>src.app module<a class="headerlink" href="#module-src.app" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author: Jatin Goel</p>
+<dl class="function">
+<dt id="src.app.add_resource">
+<code class="descclassname">src.app.</code><code class="descname">add_resource</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#add_resource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.add_resource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new Resource to the application.</p>
+<p>POST    -   /Resource</p>
+<p><strong>Request</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first">“hostname”: {{ hostname }},</p>
+<p>“username”: {{ username }},</p>
+<p class="last">“password”: {{ password }}</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p><strong>Response</strong></p>
+<blockquote>
+<div><p>201</p>
+<blockquote>
+<div>“”</div></blockquote>
+<p>400</p>
+<blockquote>
+<div><ul class="simple">
+<li>hostname is not available</li>
+</ul>
+<dl class="docutils">
+<dt>{</dt>
+<dd>“error”: “A resource already exists with the given hostname”</dd>
+</dl>
+<p>}</p>
+<ul class="simple">
+<li>invalid request</li>
+</ul>
+<dl class="docutils">
+<dt>{</dt>
+<dd>“error”: “Hostname / Username / Password missing in the request body”</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.app.add_user">
+<code class="descclassname">src.app.</code><code class="descname">add_user</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#add_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.add_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new User to the application.</p>
+<p>POST    -   /User</p>
+<p><strong>Request</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first">“username”: {{ username }},</p>
+<p class="last">“password”: {{ password }}</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p><strong>Response</strong></p>
+<blockquote>
+<div><p>201</p>
+<blockquote>
+<div>“”</div></blockquote>
+<p>400</p>
+<blockquote>
+<div><ul class="simple">
+<li>username is not available</li>
+</ul>
+<dl class="docutils">
+<dt>{</dt>
+<dd>“error”: “A user already exists with the given username”</dd>
+</dl>
+<p>}</p>
+<ul class="simple">
+<li>invalid request</li>
+</ul>
+<dl class="docutils">
+<dt>{</dt>
+<dd>“error”: “Username / Password missing in the request body”</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.app.decrypt">
+<code class="descclassname">src.app.</code><code class="descname">decrypt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#decrypt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.decrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypts the <strong>ciphertext</strong> parameter received in the request payload
+using the other parameters, <strong>enc_session_key</strong>, <strong>nonce</strong>, <strong>tag</strong>,
+and returns the decrypted text as the response.</p>
+<p>POST    -   /Decrypt</p>
+<p><strong>Request</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first">“enc_session_key”: “”,</p>
+<p>“nonce”: “”,</p>
+<p>“ciphertext”: “”,</p>
+<p class="last">“tag”: “”</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p><strong>Response</strong></p>
+<blockquote>
+<div><p>200</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd>“message”: {{ Decrypted Message }}</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>400</p>
+<blockquote>
+<div><ul>
+<li><p class="first">encoded data is corrupted</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first last">“error”: “Malformed payload”</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</li>
+<li><p class="first">failed to decrypt</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first last">“error”: f”Failed to decrypt the message due to the error: [{error}]”</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</li>
+<li><p class="first">required parameters missing</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first last">“error”: “Tag / Ciphertext / Nonce / Encrypted Session Key missing in the request body”</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.app.delete_resource">
+<code class="descclassname">src.app.</code><code class="descname">delete_resource</code><span class="sig-paren">(</span><em>hostname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#delete_resource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.delete_resource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the resource with the given hostname.</p>
+<p>DELETE  -   /Resource/{{ hostname }}</p>
+<p><strong>Request</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first">“username”: {{ username }},</p>
+<p class="last">“password”: {{ password }}</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p><strong>Response</strong></p>
+<blockquote>
+<div><p>200</p>
+<blockquote>
+<div>“”</div></blockquote>
+<p>400</p>
+<blockquote>
+<div><ul>
+<li><p class="first">hostname is not correct</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first last">“error”: “Incorrect hostname”</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</li>
+<li><p class="first">invalid request</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first last">“error”: “Username / Password missing in the request body”</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.app.delete_user">
+<code class="descclassname">src.app.</code><code class="descname">delete_user</code><span class="sig-paren">(</span><em>username</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#delete_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.delete_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the user with the given Username.</p>
+<p>DELETE  -   /User/{{ username }}</p>
+<p><strong>Request</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd>“password”: {{ password }}</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p><strong>Response</strong></p>
+<blockquote>
+<div><p>200</p>
+<blockquote>
+<div>“”</div></blockquote>
+<p>400</p>
+<blockquote>
+<div><ul>
+<li><p class="first">username is not correct</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first last">“error”: “Incorrect Username”</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</li>
+<li><p class="first">invalid request</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first last">“error”: “Password missing in the request body”</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.app.encrypt">
+<code class="descclassname">src.app.</code><code class="descname">encrypt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#encrypt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.encrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts the <strong>message</strong> parameter received in the request payload,
+and returns the encrypted text, and other details required for its
+decryption.</p>
+<p>POST    -   /Encrypt</p>
+<p><strong>Request</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd>“message”: {{ Message to be encrypted }}</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p><strong>Response</strong></p>
+<blockquote>
+<div><p>200</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first">“enc_session_key”: “”,</p>
+<p>“nonce”: “”,</p>
+<p>“ciphertext”: “”,</p>
+<p class="last">“tag”: “”</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>400</p>
+<blockquote>
+<div><ul>
+<li><p class="first">failed to encrypt</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first last">“error”: f”Failed to encrypt the message due to the error: [{error}]”</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</li>
+<li><p class="first"><strong>message</strong> parameter is missing</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first last">“error”: “Message missing in the request body”</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.app.get_resource">
+<code class="descclassname">src.app.</code><code class="descname">get_resource</code><span class="sig-paren">(</span><em>hostname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#get_resource"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.get_resource" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the information for the given hostname.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.app.get_resources">
+<code class="descclassname">src.app.</code><code class="descname">get_resources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#get_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.get_resources" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of all the Resources stored in the database.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.app.get_routes">
+<code class="descclassname">src.app.</code><code class="descname">get_routes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#get_routes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.get_routes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.app.get_user">
+<code class="descclassname">src.app.</code><code class="descname">get_user</code><span class="sig-paren">(</span><em>username</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#get_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.get_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the information for the given username.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.app.get_users">
+<code class="descclassname">src.app.</code><code class="descname">get_users</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#get_users"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.get_users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of all the Users stored in the database.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.app.is_healthy">
+<code class="descclassname">src.app.</code><code class="descname">is_healthy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#is_healthy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.is_healthy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.app.login">
+<code class="descclassname">src.app.</code><code class="descname">login</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validates the given username and password, and returns a JWT token if
+user is authenticated, else returns HTTP 400.</p>
+<p>POST    -   /Login</p>
+<p><strong>Request</strong></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first">“username”: {{ username }},</p>
+<p class="last">“password”: {{ password }}</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p><strong>Response</strong></p>
+<blockquote>
+<div><p>200</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd>“token”: {{ token }}</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>400</p>
+<blockquote>
+<div><ul>
+<li><p class="first">username / password does not match</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>{</dt>
+<dd><p class="first last">“error”: “Invalid username / password”</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.app.main">
+<code class="descclassname">src.app.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="src.app.update_resource_credentials">
+<code class="descclassname">src.app.</code><code class="descname">update_resource_credentials</code><span class="sig-paren">(</span><em>hostname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#update_resource_credentials"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.update_resource_credentials" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the credentials of the resource that matches the given hostname.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.app.update_resource_interval">
+<code class="descclassname">src.app.</code><code class="descname">update_resource_interval</code><span class="sig-paren">(</span><em>hostname</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#update_resource_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.update_resource_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the polling interval period of the resource that matches the given hostname.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="src.app.validate_token">
+<code class="descclassname">src.app.</code><code class="descname">validate_token</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/app.html#validate_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.app.validate_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for validating the JWT token required for API requests.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.constants">
+<span id="src-constants-module"></span><h2>src.constants module<a class="headerlink" href="#module-src.constants" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author: Jatin Goel</p>
+</div>
+<div class="section" id="module-src.exception">
+<span id="src-exception-module"></span><h2>src.exception module<a class="headerlink" href="#module-src.exception" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author: Jatin Goel</p>
+<dl class="exception">
+<dt id="src.exception.CorruptedDataException">
+<em class="property">exception </em><code class="descclassname">src.exception.</code><code class="descname">CorruptedDataException</code><a class="reference internal" href="_modules/src/exception.html#CorruptedDataException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.exception.CorruptedDataException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Base64 Encoded data is corrupted.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="src.exception.DecryptionFailedException">
+<em class="property">exception </em><code class="descclassname">src.exception.</code><code class="descname">DecryptionFailedException</code><a class="reference internal" href="_modules/src/exception.html#DecryptionFailedException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.exception.DecryptionFailedException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Failed to decrypt the given message</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="src.exception.EncryptionFailedException">
+<em class="property">exception </em><code class="descclassname">src.exception.</code><code class="descname">EncryptionFailedException</code><a class="reference internal" href="_modules/src/exception.html#EncryptionFailedException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.exception.EncryptionFailedException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Failed to encrypt the given message</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="src.exception.InvalidOperationException">
+<em class="property">exception </em><code class="descclassname">src.exception.</code><code class="descname">InvalidOperationException</code><a class="reference internal" href="_modules/src/exception.html#InvalidOperationException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.exception.InvalidOperationException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Given operation is invalid or not supported.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="src.exception.NoSuchResourceException">
+<em class="property">exception </em><code class="descclassname">src.exception.</code><code class="descname">NoSuchResourceException</code><a class="reference internal" href="_modules/src/exception.html#NoSuchResourceException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.exception.NoSuchResourceException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>No Resource exists with the given hostname.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="src.exception.NoSuchUserException">
+<em class="property">exception </em><code class="descclassname">src.exception.</code><code class="descname">NoSuchUserException</code><a class="reference internal" href="_modules/src/exception.html#NoSuchUserException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.exception.NoSuchUserException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>No User exists with the given username.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="src.exception.ResourceAlreadyExistsException">
+<em class="property">exception </em><code class="descclassname">src.exception.</code><code class="descname">ResourceAlreadyExistsException</code><a class="reference internal" href="_modules/src/exception.html#ResourceAlreadyExistsException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.exception.ResourceAlreadyExistsException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>A Resource already exists with the given hostname.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="src.exception.UserAlreadyExistsException">
+<em class="property">exception </em><code class="descclassname">src.exception.</code><code class="descname">UserAlreadyExistsException</code><a class="reference internal" href="_modules/src/exception.html#UserAlreadyExistsException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.exception.UserAlreadyExistsException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>A User already exists with the given username.</p>
+<p>Please try another username.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.health_aggregator">
+<span id="src-health-aggregator-module"></span><h2>src.health_aggregator module<a class="headerlink" href="#module-src.health_aggregator" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author: Jatin Goel</p>
+<dl class="class">
+<dt id="src.health_aggregator.HealthAggregator">
+<em class="property">class </em><code class="descclassname">src.health_aggregator.</code><code class="descname">HealthAggregator</code><a class="reference internal" href="_modules/src/health_aggregator.html#HealthAggregator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.health_aggregator.HealthAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Class to keep a check on the health of all the resources.</p>
+<dl class="method">
+<dt id="src.health_aggregator.HealthAggregator.cleanup">
+<code class="descname">cleanup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/health_aggregator.html#HealthAggregator.cleanup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.health_aggregator.HealthAggregator.cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disconnect from all the resources.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.health_aggregator.HealthAggregator.is_healthy">
+<code class="descname">is_healthy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/health_aggregator.html#HealthAggregator.is_healthy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.health_aggregator.HealthAggregator.is_healthy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks and returns if all resources are in a healthy state or not.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.health_aggregator.HealthAggregator.start">
+<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/health_aggregator.html#HealthAggregator.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.health_aggregator.HealthAggregator.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start thread for each resource to get the status.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.health_aggregator.HealthAggregator.synchronize">
+<code class="descname">synchronize</code><span class="sig-paren">(</span><em>operation='add'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/health_aggregator.html#HealthAggregator.synchronize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.health_aggregator.HealthAggregator.synchronize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synchronize the list of active resources and their status.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="src.health_aggregator.worker">
+<code class="descclassname">src.health_aggregator.</code><code class="descname">worker</code><span class="sig-paren">(</span><em>cls_object</em>, <em>resource</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/health_aggregator.html#worker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.health_aggregator.worker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Worker block to process each resource.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">cls_object  (object):   instance of the HealthAggregator class</p>
+<p class="last">resource    (str):      hostname of the resource to be processed</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.settings">
+<span id="src-settings-module"></span><h2>src.settings module<a class="headerlink" href="#module-src.settings" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author: Jatin Goel</p>
+</div>
+<div class="section" id="module-src">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author: Jatin Goel</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SpiceWorks HealthChecker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">HealthChecker</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">HealthChecker</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">src package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">HealthChecker</a><ul>
+      <li>Previous: <a href="modules.html" title="previous chapter">HealthChecker</a></li>
+      <li>Next: <a href="src.database.html" title="next chapter">src.database package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jatin Goel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/src.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

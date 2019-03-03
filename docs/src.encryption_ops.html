@@ -1,0 +1,220 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>src.encryption_ops package &#8212; SpiceWorks HealthChecker 1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="src.resource_ops package" href="src.resource_ops.html" />
+    <link rel="prev" title="src.database package" href="src.database.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="src-encryption-ops-package">
+<h1>src.encryption_ops package<a class="headerlink" href="#src-encryption-ops-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-src.encryption_ops.decryption">
+<span id="src-encryption-ops-decryption-module"></span><h2>src.encryption_ops.decryption module<a class="headerlink" href="#module-src.encryption_ops.decryption" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author: Jatin Goel</p>
+<dl class="class">
+<dt id="src.encryption_ops.decryption.Decryption">
+<em class="property">class </em><code class="descclassname">src.encryption_ops.decryption.</code><code class="descname">Decryption</code><span class="sig-paren">(</span><em>enc_session_key</em>, <em>nonce</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/encryption_ops/decryption.html#Decryption"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.encryption_ops.decryption.Decryption" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">encrypt.Encrypt</span></code></p>
+<p>Class for decryption operations using the given encrypted session key and nonce.</p>
+<dl class="method">
+<dt id="src.encryption_ops.decryption.Decryption.decrypt">
+<code class="descname">decrypt</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/encryption_ops/decryption.html#Decryption.decrypt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.encryption_ops.decryption.Decryption.decrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypts the given message.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="src.encryption_ops.decryption.Decryption.decryption_cipher">
+<code class="descname">decryption_cipher</code><a class="headerlink" href="#src.encryption_ops.decryption.Decryption.decryption_cipher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns instance of the decryption cipher.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.encryption_ops.decryption.Decryption.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/encryption_ops/decryption.html#Decryption.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.encryption_ops.decryption.Decryption.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the RSA key files, and delete the cipher objects.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.encryption_ops.encrypt">
+<span id="src-encryption-ops-encrypt-module"></span><h2>src.encryption_ops.encrypt module<a class="headerlink" href="#module-src.encryption_ops.encrypt" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author: Jatin Goel</p>
+<dl class="class">
+<dt id="src.encryption_ops.encrypt.Encrypt">
+<em class="property">class </em><code class="descclassname">src.encryption_ops.encrypt.</code><code class="descname">Encrypt</code><a class="reference internal" href="_modules/src/encryption_ops/encrypt.html#Encrypt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.encryption_ops.encrypt.Encrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Base class for Encryption and Decryption operations.</p>
+<dl class="staticmethod">
+<dt id="src.encryption_ops.encrypt.Encrypt.destroy">
+<em class="property">static </em><code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/encryption_ops/encrypt.html#Encrypt.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.encryption_ops.encrypt.Encrypt.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the RSA key files, and delete the cipher objects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.encryption_ops.encrypt.Encrypt.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/encryption_ops/encrypt.html#Encrypt.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.encryption_ops.encrypt.Encrypt.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Destroy the previous RSA keys and cipher objects,
+and then generate fresh RSA keys and cipher objects again.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="src.encryption_ops.encrypt.encrypt">
+<code class="descclassname">src.encryption_ops.encrypt.</code><code class="descname">encrypt</code><span class="sig-paren">(</span><em>salt</em>, <em>password</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/encryption_ops/encrypt.html#encrypt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.encryption_ops.encrypt.encrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes the password using the given value of <strong>salt</strong> and
+the SHA512 algorithm.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.encryption_ops.encryption">
+<span id="src-encryption-ops-encryption-module"></span><h2>src.encryption_ops.encryption module<a class="headerlink" href="#module-src.encryption_ops.encryption" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author: Jatin Goel</p>
+<dl class="class">
+<dt id="src.encryption_ops.encryption.Encryption">
+<em class="property">class </em><code class="descclassname">src.encryption_ops.encryption.</code><code class="descname">Encryption</code><a class="reference internal" href="_modules/src/encryption_ops/encryption.html#Encryption"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.encryption_ops.encryption.Encryption" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">encrypt.Encrypt</span></code></p>
+<p>Class for encryption operations using the AES cipher and RSA Public Key.</p>
+<dl class="method">
+<dt id="src.encryption_ops.encryption.Encryption.destroy">
+<code class="descname">destroy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/encryption_ops/encryption.html#Encryption.destroy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.encryption_ops.encryption.Encryption.destroy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the RSA key files, and delete the cipher objects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="src.encryption_ops.encryption.Encryption.encrypt">
+<code class="descname">encrypt</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/encryption_ops/encryption.html#Encryption.encrypt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#src.encryption_ops.encryption.Encryption.encrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts the given message using the RSA Public Key,
+and returns the ciphertext,
+and other attributes needed for its decryption.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>message     (str / bytes):  text / data to be encrypted</dd>
+<dt>Returns:</dt>
+<dd><p class="first">dict:   dictionary consisting of,</p>
+<ul class="last simple">
+<li><strong>enc_session_key</strong>:  encrypted session key</li>
+<li><strong>nonce</strong>:            AES cipher NONCE</li>
+<li><strong>ciphertext</strong>:       encrypted data</li>
+<li><strong>tag</strong>:              tag consisting information for the data</li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="src.encryption_ops.encryption.Encryption.encryption_cipher">
+<code class="descname">encryption_cipher</code><a class="headerlink" href="#src.encryption_ops.encryption.Encryption.encryption_cipher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns instance of the encryption cipher.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-src.encryption_ops">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-src.encryption_ops" title="Permalink to this headline">¶</a></h2>
+<p>&#64;author: Jatin Goel</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">SpiceWorks HealthChecker</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">HealthChecker</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">HealthChecker</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="src.html">src package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">HealthChecker</a><ul>
+  <li><a href="src.html">src package</a><ul>
+      <li>Previous: <a href="src.database.html" title="previous chapter">src.database package</a></li>
+      <li>Next: <a href="src.resource_ops.html" title="next chapter">src.resource_ops package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Jatin Goel.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/src.encryption_ops.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
