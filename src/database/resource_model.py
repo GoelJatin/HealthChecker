@@ -113,7 +113,7 @@ class Resource(DB.Model):
             _password = Resource._encrypt_password(_password)
 
             new_resource = Resource(
-                hostname=_hostname,
+                hostname=_hostname.lower(),
                 username=_username,
                 password=_password,
                 interval=_interval
@@ -123,12 +123,31 @@ class Resource(DB.Model):
 
     def get_resource(_hostname):
         """Returns a SQLAlchemy object of the row (resource) that matches the given hostname."""
-        resource = Resource.query.filter_by(hostname=_hostname).first()
+        resource = Resource.query.filter_by(hostname=_hostname.lower()).first()
 
         if resource:
             return resource
 
         raise NoSuchResourceException('No resource exists with the given hostname')
+
+    def update_resource(_hostname, _username, _password, _interval=None):
+        """Updates the credentials of the resource with the given hostname."""
+        resource = Resource.get_resource(_hostname)
+        _password = Resource._encrypt_password(_password)
+
+        resource.username = _username
+        resource.password = _password
+
+        if _interval and isinstance(_interval, int):
+            resource.interval = _interval
+
+        DB.session.commit()
+
+    def update_resource_interval(_hostname, _interval):
+        """Updates the interval of the resource with the given hostname."""
+        resource = Resource.get_resource(_hostname)
+        resource.interval = _interval
+        DB.session.commit()
 
     def delete_resource(_hostname, _username, _password):
         """Deletes the resource with the given hostname, if username and password also matches."""
