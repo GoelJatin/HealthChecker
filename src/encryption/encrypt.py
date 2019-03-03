@@ -6,7 +6,7 @@
 import os
 import hashlib
 
-from ..constants import (
+from constants import (
     PRIVATE_KEY_PATH,
     PUBLIC_KEY_PATH
 )

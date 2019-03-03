@@ -95,7 +95,7 @@ import os
 import re
 import socket
 
-from .pyping import ping
+from pyping import ping
 
 
 class Resource:

@@ -9,9 +9,9 @@ from Cryptodome.Cipher import (
     PKCS1_OAEP
 )
 
-from ..constants import PRIVATE_KEY_PATH
+from constants import PRIVATE_KEY_PATH
 
-from .encrypt import Encrypt
+from encrypt import Encrypt
 
 
 class Decryption(Encrypt):

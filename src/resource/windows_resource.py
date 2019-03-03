@@ -5,7 +5,7 @@
 
 File for performing operations on a resource.
 
-This file consists of a class: **Resource**, which can connect to the remote
+This file consists of a class: **WindowsResource**, which can connect to the remote
 Windows Machine, using PowerShell Remoting.
 
 The instance of this class can be used to perform various operations on a machine, like,
@@ -84,19 +84,19 @@ import subprocess
 
 import paramiko
 
-from .resource import Resource
-from .script_generator import ScriptGenerator
-from .output_formatter import WindowsOutput
+from resource import Resource
+from script_generator import ScriptGenerator
+from output_formatter import WindowsOutput
 
 
-from .scripts import (
+from scripts import (
     CREDENTIALS,
     EXECUTE_COMMAND
 )
 
 
 class WindowsResource(Resource):
-    """Class for performing operations on a remote client."""
+    """Class for performing operations on a Windows client."""
 
     def __init__(self, hostname=None, username=None, password=None):
         """Initializes instance of the Resource class.
@@ -157,12 +157,6 @@ class WindowsResource(Resource):
             del exception
 
         self._os_info = "WINDOWS"
-
-    def __repr__(self):
-        return (
-            f'Resource class instance of Host: [{self.hostname}], '
-            f'for User: [{self.username}]'
-        )
 
     def _login(self):
         """Generates the Credentials File for the machine,

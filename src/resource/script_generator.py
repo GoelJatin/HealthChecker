@@ -90,7 +90,7 @@ If Machine name, and Credentials file are set to None, default value `$null` wil
 import os
 import re
 
-from ..constants import ROOT_DIR
+from constants import ROOT_DIR
 
 
 class ScriptGenerator:
