@@ -113,7 +113,13 @@ class Resource:
         if hostname is None:
             hostname = socket.gethostname()
 
-        response = ping(hostname)
+        try:
+            response = ping(hostname)
+        except ValueError as error:
+            if 'too many values to unpack' in str(error).lower():
+                raise Exception('Please run the program as Administrator')
+            else:
+                raise
 
         # Extract TTL value form the response.output string.
         try:
