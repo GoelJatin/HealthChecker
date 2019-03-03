@@ -279,26 +279,26 @@ class UnixResource(Resource):
             Returns the details of all paths, if root is set to the default value False.
             If root is set to True, it returns the details of only `/`
 
-        Args:
-            root    (bool)  --  boolean flag to specify whether to return details of all paths,
-                                    or the details of the path mounted on root(/)
+            Args:
+                root    (bool)  --  boolean flag to specify whether to return details of all paths,
+                                        or the details of the path mounted on root(/)
 
-        Returns:
-            dict - dictionary consisting the details of the storage on the client (in MB)
+            Returns:
+                dict - dictionary consisting the details of the storage on the client (in MB)
 
-            {
-                'total': size_in_MB,
-
-                'available': size_in_MB,
-
-                'drive': {
+                {
                     'total': size_in_MB,
 
                     'available': size_in_MB,
 
-                }
+                    'drive': {
+                        'total': size_in_MB,
 
-            }
+                        'available': size_in_MB,
+
+                    }
+
+                }
 
         """
         command = 'df -Pk'
@@ -397,6 +397,42 @@ class UnixResource(Resource):
             raise Exception(output.exception_code, output.exception)
 
         return output
+
+    def is_healthy(self):
+        """Checks if the resource is healthy or not.
+
+            A resource health check can be done using various parameters.
+
+            Here, we'll be doing a very basic check using the below parameters:
+
+                - Network Check:    check if the machine has internet connectivity
+
+                - Disk space check: check whether the resource has at least
+                **1 GB** free space in /root
+
+            Args:
+                None
+
+            Returns:
+                bool:   boolean value specifying whether the resource is healthy or not
+
+        """
+        try:
+            # check network if the resource is local
+            if self.is_local_machine:
+                output = self.execute_command("ping 0.0.0.0 -c 4")
+
+                if output.exception:
+                    return False
+
+            # otherwise, for remote machines, network check is done as part of getting the storage details
+            output = self.get_storage_details(True)
+
+            return output.get('available', 0) >= 1024
+
+        # get storage details raises exception if the machine is not reachable
+        except Exception:
+            return False
 
     def disconnect(self):
         """Disconnects the current session with the resource.

@@ -88,11 +88,12 @@ from .resource import Resource
 from .script_generator import ScriptGenerator
 from .output_formatter import WindowsOutput
 
-
 from .scripts_defines import (
     CREDENTIALS,
     EXECUTE_COMMAND
 )
+
+from .exception import GetStorageFailedException
 
 
 class WindowsResource(Resource):
@@ -336,16 +337,16 @@ class WindowsResource(Resource):
             }
 
         Raises:
-            Exception(Exception_Code, Exception_Message):
+            GetStorageFailedException(Exception_Code, Exception_Message):
                 if failed to get the storage details for the machine
 
         """
         output = self.execute_command('Get-PSDrive')
 
         if output.exception_message:
-            raise Exception(output.exception_code, output.exception_message)
+            raise GetStorageFailedException(output.exception_code, output.exception_message)
         elif output.exception:
-            raise Exception(output.exception_code, output.exception)
+            raise GetStorageFailedException(output.exception_code, output.exception)
 
         storage_dict = {
             'total': 0,
@@ -433,6 +434,45 @@ class WindowsResource(Resource):
             raise Exception(output.exception_code, output.exception)
 
         return output
+
+    def is_healthy(self):
+        """Checks if the resource is healthy or not.
+
+            A resource health check can be done using various parameters.
+
+            Here, we'll be doing a very basic check using the below parameters:
+
+                - Network Check:    check if the machine has internet connectivity
+
+                - Disk space check: check whether the resource has at least
+                **1 GB** free space in C:\\
+
+            Args:
+                None
+
+            Returns:
+                bool:   boolean value specifying whether the resource is healthy or not
+
+        """
+        try:
+            # check network if the resource is local
+            if self.is_local_machine:
+                output = self.execute_command(
+                    "(Get-NetRoute | ? DestinationPrefix -eq '0.0.0.0/0' | Get-NetIPInterface "
+                    "| Where ConnectionState -eq 'Connected').ConnectionState"
+                )
+
+                if output.exception:
+                    return False
+
+            # otherwise, for remote machines, network check is done as part of getting the storage details
+            output = self.get_storage_details()
+
+            return output.get('C', {}).get('available', 0) >= 1024
+
+        # get storage details raises exception if the machine is not reachable
+        except GetStorageFailedException:
+            return False
 
     def disconnect(self):
         """Disconnects the current session with the resource.
