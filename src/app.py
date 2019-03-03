@@ -27,6 +27,11 @@ from exception import (
 )
 from constants import PEM_DIR
 
+from health_aggregator import HealthAggregator
+
+
+HEALTH_AGGREGATOR = None
+
 
 def validate_token(func):
     """Decorator for validating the JWT token required for API requests."""
@@ -46,11 +51,16 @@ def validate_token(func):
             jwt.decode(token, app.config['SECRET_KEY'])
             return func(*args, **kwargs)
         except jwt.DecodeError:
-            return Response(
-                json.dumps({'error': 'Token is missing / invalid'}),
-                401,
-                mimetype='application/json'
-            )
+            message = 'Token is missing / invalid'
+        except jwt.exceptions.ExpiredSignatureError:
+            message = 'Token has expired'
+
+
+        return Response(
+            json.dumps({'error': message}),
+            401,
+            mimetype='application/json'
+        )
 
     return wrapper
 
@@ -120,7 +130,7 @@ def encrypt():
             )
 
         for key in data:
-            data[key] = b64encode(data[key])
+            data[key] = b64encode(data[key]).decode()
 
         return jsonify(data), 200
 
@@ -209,7 +219,7 @@ def decrypt():
         try:
             message = encryption.decrypt(
                 (request_data['ciphertext'], request_data['tag'])
-            )
+            ).decode()
         except ValueError as error:
             return Response(
                 json.dumps(
@@ -498,6 +508,9 @@ def add_resource():
                 request_data['password'],
                 request_data.get('interval', 60)
             )
+
+            HEALTH_AGGREGATOR.synchronize()
+
             return Response('', 201)
         except ResourceAlreadyExistsException:
             return Response(
@@ -582,6 +595,7 @@ def delete_resource(hostname):
             if Resource.delete_resource(
                     hostname, request_data['username'], request_data['password']
             ):
+                HEALTH_AGGREGATOR.synchronize()
                 return Response('', 200, mimetype='application/json')
         except NoSuchResourceException:
             return Response(
@@ -614,6 +628,19 @@ def get_routes():
     return Response('\n'.join(output), 200, mimetype='text/plain')
 
 
+@app.route('/IsHealthy')
+@app.route('/ishealthy')
+def is_healthy():
+    status = HEALTH_AGGREGATOR.is_healthy()
+
+    if status is True:
+        status_code = 200
+    else:
+        status_code = 503
+
+    return Response('', status_code, mimetype='text/plain')
+
+
 def main():
     os.makedirs(PEM_DIR, exist_ok=True)
 
@@ -624,6 +651,7 @@ def main():
         User.add_user('SpiceWorks', 'HealthChecker')
 
     app.run(port=5000)
+    HEALTH_AGGREGATOR = HealthAggregator()
 
 
 if __name__ == '__main__':
