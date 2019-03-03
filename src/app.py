@@ -559,7 +559,7 @@ def update_resource_credentials(hostname):
     if 'username' in request_data and 'password' in request_data:
         try:
             Resource.update_resource(
-                request_data['hostname'],
+                hostname,
                 request_data['username'],
                 request_data['password'],
                 request_data.get('interval')
@@ -590,7 +590,7 @@ def update_resource_interval(hostname):
     if 'interval' in request_data:
         try:
             Resource.update_resource_interval(
-                request_data['hostname'],
+                hostname,
                 request_data['interval']
             )
 
