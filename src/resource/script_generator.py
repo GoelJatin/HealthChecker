@@ -312,11 +312,11 @@ If ($ComputerName -eq $null) {
                     if the type of the value is not supported
 
         """
-        arguments_list = re.findall(r'##HealthChecker--([\w_]*)--##HealthChecker##', script)
+        arguments_list = re.findall(r'##HealthChecker--([\w_]*)--HealthChecker##', script)
 
         for argument in arguments_list:
             if argument not in data:
-                raise Exception(f'Argument: "{argument}" is not present in the data dict'
+                raise Exception(f'Argument: "{argument}" is not present in the data dict')
             else:
                 if isinstance(data[argument], bool):
                     if data[argument] is True:
@@ -331,7 +331,7 @@ If ($ComputerName -eq $null) {
                     raise Exception('Data type of the value is not yet supported')
 
                 script = script.replace(
-                    f'##HealthChecker--{argument}--##HealthChecker##', value
+                    f'##HealthChecker--{argument}--HealthChecker##', value
                 )
 
         return script
