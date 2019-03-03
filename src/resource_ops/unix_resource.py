@@ -84,9 +84,9 @@ import subprocess
 
 import paramiko
 
-from resource import Resource
-from script_generator import ScriptGenerator
-from output_formatter import UnixOutput
+from .resource import Resource
+from .script_generator import ScriptGenerator
+from .output_formatter import UnixOutput
 
 
 class UnixResource(Resource):

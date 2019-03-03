@@ -84,12 +84,12 @@ import subprocess
 
 import paramiko
 
-from resource import Resource
-from script_generator import ScriptGenerator
-from output_formatter import WindowsOutput
+from .resource import Resource
+from .script_generator import ScriptGenerator
+from .output_formatter import WindowsOutput
 
 
-from scripts_defines import (
+from .scripts_defines import (
     CREDENTIALS,
     EXECUTE_COMMAND
 )
@@ -126,7 +126,7 @@ class WindowsResource(Resource):
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE
             )
-            self._execution_policy = process.stdout.decode()
+            self._execution_policy = process.stdout.decode().strip()
 
             # Ensure the PowerShell execution policy is set to Remote Signed
             __ = subprocess.run(
@@ -157,7 +157,6 @@ class WindowsResource(Resource):
             del exception
 
         self._os_info = "WINDOWS"
-        self.credentials_file = None
         self._ssh = None
         self._ip_address = None
 

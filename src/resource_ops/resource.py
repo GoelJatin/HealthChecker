@@ -95,7 +95,7 @@ import os
 import re
 import socket
 
-from pyping import ping
+from .pyping import ping
 
 
 class Resource:
@@ -201,7 +201,7 @@ class Resource:
         del temp
 
         if self.is_local_machine:
-            self.credentials_file = None
+            pass
 
         elif self.username is not None:
             if self.password is None:
@@ -221,6 +221,8 @@ class Resource:
             raise Exception(exception)
 
         self._is_connected = True
+
+        del self.password
 
     def __repr__(self):
         return (
