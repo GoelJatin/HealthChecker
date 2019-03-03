@@ -590,4 +590,6 @@ if __name__ == '__main__':
         DB_User.create_all()
         DB_Resource.create_all()
 
+        User.add_user('SpiceWorks', 'HealthChecker')
+
     app.run(port=5000)
