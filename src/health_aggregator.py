@@ -50,7 +50,7 @@ class HealthAggregator:
             }
 
     @property
-    def resource(self):
+    def resources(self):
         """Returns the list of all active resources being monitored."""
         return self._resources
 
