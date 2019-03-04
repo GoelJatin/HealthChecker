@@ -230,6 +230,12 @@ class Resource:
             f'for User: [{self.username}]'
         )
 
+    def __str__(self):
+        return (
+            f'Resource class instance of Host: [{self.hostname}], '
+            f'for User: [{self.username}]'
+        )
+
     def __enter__(self):
         """Returns the current instance.
 

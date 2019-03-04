@@ -463,16 +463,15 @@ class WindowsResource(Resource):
                 )
 
                 if output.exception:
-                    return False
+                    return False, "Network is down"
 
             # otherwise, for remote machines, network check is done as part of getting the storage details
             output = self.get_storage_details()
-
-            return output.get('C', {}).get('available', 0) >= 1024
+            return (True, "") if output.get('C', {}).get('available', 0) >= 1024 else (False, "Disk is running out of space")
 
         # get storage details raises exception if the machine is not reachable
-        except GetStorageFailedException:
-            return False
+        except GetStorageFailedException as excp:
+            return False, str(excp)
 
     def disconnect(self):
         """Disconnects the current session with the resource.
