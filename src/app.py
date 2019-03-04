@@ -675,6 +675,11 @@ def delete_resource(hostname):
 @app.route('/Routes')
 @app.route('/routes')
 def get_routes():
+    """Returns the details of all the Endpoints available in the Application,
+        along with information about the HTTP methods that are supported,
+        and detailed description about each Endpoint.
+
+    """
     output = [f'{"S. No.":6}\t{"Endpoint":50}\t{"Method":8}\n']
 
     for index, rule in enumerate(app.url_map.iter_rules()):
@@ -691,7 +696,15 @@ def get_routes():
 
 @app.route('/IsHealthy')
 @app.route('/ishealthy')
+@validate_token
 def is_healthy():
+    """Returns the status of the application, whether the application is healthy or not.
+
+        HTTP Status:    **200**, if all the resources being monitored are healthy
+
+        HTTP Status:    **503**, if any of the resources being monitored is unhealthy
+
+    """
     status = HEALTH_AGGREGATOR.is_healthy()
 
     if status is True:
@@ -700,6 +713,27 @@ def is_healthy():
         status_code = 503
 
     return Response('', status_code, mimetype='text/plain')
+
+
+@app.route('/ResourceState')
+@app.route('/resourcestate')
+@validate_token
+def get_resource_state():
+    """Returns the list of all the resources,
+        their condition (Healthy / Unhealthy), and reason that caused it.
+
+    """
+    output = [f'{"S. No.":6}\t{"Resource":50}\t{"Health State":12}\t{"Reason":100}\n']
+
+    for index, resource in enumerate(HEALTH_AGGREGATOR.resource_state):
+        print(index, resource)
+        output.append(
+            f'{index + 1:<6}\t{resource:<50}\t'
+            f'{"Healthy" if HEALTH_AGGREGATOR.resource_state[resource]["is_healthy"] else "Unhealthy":<12}\t'
+            f'{HEALTH_AGGREGATOR.resource_state[resource]["reason"]:<100}\n'
+        )
+
+    return Response('\n'.join(output), 200, mimetype='text/plain')
 
 
 def main():
