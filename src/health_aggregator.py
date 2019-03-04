@@ -17,8 +17,8 @@ class HealthAggregator:
     """Class to keep a check on the health of all the resources."""
 
     def __init__(self):
-        self.resources = {}
-        self.resource_state = {}
+        self._resources = {}
+        self._resource_state = {}
         self.synchronize()
         self.start()
 
@@ -34,12 +34,30 @@ class HealthAggregator:
                 'interval': resource.interval
             }
 
-            self.resource_state[resource.hostname] = self.resources[resource.hostname]['resource'].is_healthy()
-        except Exception:
+            self.resource_state[resource.hostname] = dict(
+                zip(
+                    ('is_healthy', 'reason'),
+                    self.resources[resource.hostname]['resource'].is_healthy()
+                )
+            )
+        except Exception as excp:
             # in case the resource connection failed
             # since the resource is not added to the **resources** dict
             # it shall be tried again during syncronize
-            self.resource_state[resource.hostname] = False
+            self.resource_state[resource.hostname] = {
+                'is_healthy': False,
+                'reason': str(excp)
+            }
+
+    @property
+    def resource(self):
+        """Returns the list of all active resources being monitored."""
+        return self._resources
+
+    @property
+    def resource_state(self):
+        """Returns the status of all the resources."""
+        return self._resource_state
 
     def synchronize(self, operation='add'):
         """Synchronize the list of active resources and their status."""
@@ -63,21 +81,27 @@ class HealthAggregator:
     def start(self):
         """Start thread for each resource to get the status."""
         for resource in self.resources:
-            thread = Thread(target=worker, args=(self, resource,), daemon=True)
+            thread = Thread(target=worker, args=(self, resource), daemon=True)
             thread.start()
             # self.worker(resource)
 
     def is_healthy(self):
         """Checks and returns if all resources are in a healthy state or not."""
-        return all(self.resource_state.values())
+        # return all(self.resource_state.values())
+
+        for i in self.resource_state.values():
+            if not i['is_healthy']:
+                return False
+
+        return True
 
     def cleanup(self):
         """Disconnect from all the resources."""
         for resource in self.resources:
             self.resources[resource]['resource'].disconnect()
 
-        del self.resources
-        del self.resource_state
+        self._resources = None
+        self._resource_state = None
 
 
 def worker(cls_object, resource):
@@ -93,18 +117,21 @@ def worker(cls_object, resource):
         synchronize = False
 
         try:
-            health = cls_object.resources[resource]['resource'].is_healthy()
-            cls_object.resource_state[resource] = health
-
+            health, reason = cls_object.resources[resource]['resource'].is_healthy()
+            cls_object.resource_state[resource]['is_healthy'] = health
+            cls_object.resource_state[resource]['reason'] = reason
             interval = cls_object.resources[resource]['interval']
 
-            if health is False and isinstance(cls_object.resources[resource]['resource'], UnixResource):
+            if (health is False and
+                    isinstance(cls_object.resources[resource]['resource'], UnixResource) and
+                    reason.lower() == "ssh session not active"
+            ):
                 # in case of UNIX machine, SSH tunnel is closed
                 # hence we need to delete this object, and create new connection
                 del cls_object.resources[resource]
                 synchronize = True
         except KeyError:
-            cls_object.resource_state[resource] = False
+            cls_object.resource_state[resource]['is_healthy'] = False
             synchronize = True
 
         if synchronize:
