@@ -3,3 +3,4 @@ __pycache__
 .spyproject
 *.db
 keys
+.pytest_cache
