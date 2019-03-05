@@ -331,7 +331,7 @@ def add_user():
 
             201
 
-                ""
+                {}
 
             400
 
@@ -353,7 +353,7 @@ def add_user():
     if 'username' in request_data and 'password' in request_data:
         try:
             User.add_user(request_data['username'], request_data['password'])
-            response = Response('', 201)
+            response = Response({}, 201, mimetype="application/json")
             response.headers['Location'] = f'/User/{request_data["username"]}'
             return response
         except UserAlreadyExistsException:
@@ -412,7 +412,7 @@ def delete_user(username):
 
             200
 
-                ""
+                {}
 
             400
 
@@ -434,7 +434,7 @@ def delete_user(username):
     if 'password' in request_data:
         try:
             if User.delete_user(username, request_data['password']):
-                return Response('', 200, mimetype='application/json')
+                return Response({}, 200, mimetype='application/json')
         except NoSuchUserException:
             return Response(
                 json.dumps({'error': 'Incorrect Username'}),
@@ -481,7 +481,7 @@ def add_resource():
 
             201
 
-                ""
+                {}
 
             400
 
@@ -508,10 +508,12 @@ def add_resource():
                 request_data['password'],
                 request_data.get('interval', 60)
             )
+            response = Response({}, 201, mimetype="application/json")
+            response.headers['Location'] = f'/Resource/{request_data["hostname"]}'
 
             HEALTH_AGGREGATOR.synchronize()
 
-            return Response('', 201)
+            return response
         except ResourceAlreadyExistsException:
             return Response(
                 json.dumps({'error': 'A resource already exists with the given hostname'}),
@@ -565,7 +567,7 @@ def update_resource_credentials(hostname):
                 request_data.get('interval')
             )
 
-            return Response('', 200)
+            return Response({}, 200, mimetype="application/json")
         except NoSuchResourceException:
             return Response(
                 json.dumps({'error': 'Incorrect hostname'}),
@@ -594,7 +596,7 @@ def update_resource_interval(hostname):
                 request_data['interval']
             )
 
-            return Response('', 200)
+            return Response({}, 200, mimetype="application/json")
         except NoSuchResourceException:
             return Response(
                 json.dumps({'error': 'Incorrect hostname'}),
@@ -632,7 +634,7 @@ def delete_resource(hostname):
 
             200
 
-                ""
+                {}
 
             400
 
@@ -657,7 +659,7 @@ def delete_resource(hostname):
                     hostname, request_data['username'], request_data['password']
             ):
                 HEALTH_AGGREGATOR.synchronize()
-                return Response('', 200, mimetype='application/json')
+                return Response({}, 200, mimetype='application/json')
         except NoSuchResourceException:
             return Response(
                 json.dumps({'error': 'Incorrect hostname'}),
@@ -712,7 +714,7 @@ def is_healthy():
     else:
         status_code = 503
 
-    return Response('', status_code, mimetype='text/plain')
+    return Response({}, status_code, mimetype='application/json')
 
 
 @app.route('/ResourceState')
@@ -726,7 +728,6 @@ def get_resource_state():
     output = [f'{"S. No.":6}\t{"Resource":50}\t{"Health State":12}\t{"Reason":100}\n']
 
     for index, resource in enumerate(HEALTH_AGGREGATOR.resource_state):
-        print(index, resource)
         output.append(
             f'{index + 1:<6}\t{resource:<50}\t'
             f'{"Healthy" if HEALTH_AGGREGATOR.resource_state[resource]["is_healthy"] else "Unhealthy":<12}\t'
@@ -736,7 +737,26 @@ def get_resource_state():
     return Response('\n'.join(output), 200, mimetype='text/plain')
 
 
+@app.route('/Reset', methods=['POST'])
+@app.route('/reset', methods=['POST'])
+@validate_token
+def reset():
+    """Reset the Health Aggregator application, and create fresh instances for each resource.
+
+        Helpful after updating the credentials of any of the resource,
+        without the need to restart the entire application.
+
+    """
+    global HEALTH_AGGREGATOR
+
+    HEALTH_AGGREGATOR.cleanup()
+    HEALTH_AGGREGATOR = HealthAggregator()
+
+    return jsonify({}), 200
+
+
 def main():
+    """Main executor function, that starts the application."""
     global HEALTH_AGGREGATOR
 
     os.makedirs(PEM_DIR, exist_ok=True)
