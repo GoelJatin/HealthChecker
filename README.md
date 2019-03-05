@@ -99,3 +99,11 @@ Other endpoints and their details can be retrieved using the info from **Endpoin
 ## Pending items
 
 Due to limited time, I could only test it out manually, but could not write any Unit Tests.
+
+
+## Changelog
+- Get and store the **reason** for down state of each resource using the Resource class, and store the info in Health Aggregator service
+- Safe close all threads for Health Aggregator cleanup
+- Added Endpoint **GET    -   /ResourceState**, to get the list of resources, their health state, and reason if they are down
+- Added Endpoint **POST   -   /Reset**, to reset the Health Aggregator service, and initiate fresh connection to all resources
+- Added **tests** for the application
