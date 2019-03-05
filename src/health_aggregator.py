@@ -134,6 +134,11 @@ def worker(cls_object, resource):
             cls_object.resource_state[resource]['is_healthy'] = False
             synchronize = True
 
+        except TypeError:
+            # raised from Line 120, when cleanup was called, and resources is set to None
+            # exit the thread
+            return
+
         if synchronize:
             cls_object.synchronize()
 
